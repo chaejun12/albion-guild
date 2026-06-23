@@ -100,6 +100,7 @@ export const WEAPONS = {
     { id: 'T8_2H_CLEAVER_HELL',         name: 'Carving Sword' },
     { id: 'T8_2H_DUALSCIMITAR_UNDEAD',  name: 'Galatine Pair' },
     { id: 'T8_2H_CLAYMORE_AVALON',      name: 'Kingmaker' },
+    { id: 'T8_2H_CLAYMORE_BRECILIEN',   name: 'Infinity Blade' },
   ],
 
   // Axe
@@ -111,6 +112,7 @@ export const WEAPONS = {
     { id: 'T8_2H_SCYTHE_HELL',         name: 'Infernal Scythe' },
     { id: 'T8_2H_DUALAXE_KEEPER',      name: 'Bear Paws' },
     { id: 'T8_2H_AXE_AVALON',          name: 'Realmbreaker' },
+    { id: 'T8_2H_AXE_BRECILIEN',       name: 'Crystal Reaper' },
   ],
 
   // Mace
@@ -122,6 +124,7 @@ export const WEAPONS = {
     { id: 'T8_MAIN_MACE_HELL',         name: 'Incubus Mace' },
     { id: 'T8_2H_MACE_MORGANA',        name: 'Camlann Mace' },
     { id: 'T8_2H_DUALMACE_AVALON',     name: 'Oathkeepers' },
+    { id: 'T8_MAIN_MACE_BRECILIEN',    name: 'Dreadstorm Monarch' },
   ],
 
   // Hammer
@@ -133,6 +136,7 @@ export const WEAPONS = {
     { id: 'T8_2H_DUALHAMMER_HELL',     name: 'Forge Hammers' },
     { id: 'T8_2H_RAM_KEEPER',          name: 'Grovekeeper' },
     { id: 'T8_2H_HAMMER_AVALON',       name: 'Hand of Justice' },
+    { id: 'T8_2H_HAMMER_BRECILIEN',    name: 'Trubolt Hammer' },
   ],
 
   // Crossbow
@@ -144,6 +148,7 @@ export const WEAPONS = {
     { id: 'T8_2H_DUALCROSSBOW_HELL',   name: 'Boltcasters' },
     { id: 'T8_2H_CROSSBOWLARGE_MORGANA', name: 'Siegebow' },
     { id: 'T8_2H_CROSSBOW_CANNON_AVALON', name: 'Energy Shaper' },
+    { id: 'T8_2H_CROSSBOW_BRECILIEN', name: 'Arclight Blaster' },
   ],
 
   // Bow
@@ -155,6 +160,7 @@ export const WEAPONS = {
     { id: 'T8_2H_BOW_HELL',          name: 'Wailing Bow' },
     { id: 'T8_2H_BOW_KEEPER',        name: 'Bow of Badon' },
     { id: 'T8_2H_BOW_AVALON',        name: 'Mistpiercer' },
+    { id: 'T8_2H_BOW_BRECILIEN',     name: 'Skystrider Bow' },
   ],
 
   // Spear
@@ -166,6 +172,7 @@ export const WEAPONS = {
     { id: 'T8_2H_HARPOON_HELL',      name: 'Spirithunter' },
     { id: 'T8_2H_TRIDENT_UNDEAD',    name: 'Trinity Spear' },
     { id: 'T8_MAIN_SPEAR_LANCE_AVALON', name: 'Daybreaker' },
+    { id: 'T8_2H_GLAIVE_BRECILIEN',  name: 'Rift Glaive' },
   ],
 
   // Dagger
@@ -199,6 +206,7 @@ export const WEAPONS = {
     { id: 'T8_2H_KNUCKLES_HELL',     name: 'Hellfire Hands' },
     { id: 'T8_2H_KNUCKLES_MORGANA',  name: 'Ravenstrike Cestus' },
     { id: 'T8_2H_KNUCKLES_AVALON',   name: 'Fists of Avalon' },
+    { id: 'T8_2H_KNUCKLES_BRECILIEN',name: 'Forcepulse Bracer' },
   ],
 
   // Off-hand Shield
@@ -208,28 +216,41 @@ export const WEAPONS = {
     { id: 'T8_OFF_SHIELD_HELL',      name: 'Caitiff Shield' },
     { id: 'T8_OFF_SPIKEDSHIELD_MORGANA', name: 'Facebreaker' },
     { id: 'T8_OFF_SHIELD_AVALON',    name: 'Astral Aegis' },
+    { id: 'T8_OFF_SHIELD_KEEPER',    name: 'Unbreakable Ward' },
   ],
 
   // Torch (Off-hand)
   torch: [
+    { id: 'T8_OFF_TORCH',            name: 'Torch' },
     { id: 'T8_OFF_HORN_KEEPER',      name: 'Mistcaller' },
     { id: 'T8_OFF_JESTERCANE_HELL',  name: 'Leering Cane' },
     { id: 'T8_OFF_LAMP_UNDEAD',      name: 'Cryptcandle' },
     { id: 'T8_OFF_TALISMAN_AVALON',  name: 'Sacred Scepter' },
+    { id: 'T8_OFF_TORCH_MORGANA',    name: 'Blueflame Torch' },
   ],
 
   // Tome (Off-hand)
   tome: [
+    { id: 'T8_OFF_BOOK',             name: 'Tome of Spells' },
     { id: 'T8_OFF_ORB_MORGANA',      name: 'Eye of Secrets' },
     { id: 'T8_OFF_DEMONSKULL_HELL',  name: 'Muisak' },
     { id: 'T8_OFF_TOTEM_KEEPER',     name: 'Taproot' },
     { id: 'T8_OFF_CENSER_AVALON',    name: 'Celestial Censer' },
+    { id: 'T8_OFF_BOOK_UNDEAD',      name: 'Timelocked Grimoire' },
   ],
 };
 
 // ─── ARMOR — CHEST ──────────────────────────────────────────────────────────
 
 export const ARMOR_CHEST = {
+  gathering: [
+    { id: 'T8_ARMOR_GATHERER_SET1',  name: 'Reaper Garb' },
+    { id: 'T8_ARMOR_GATHERER_SET2',  name: 'Fisher Garb' },
+    { id: 'T8_ARMOR_GATHERER_SET3',  name: 'Skinner Armor' },
+    { id: 'T8_ARMOR_GATHERER_SET4',  name: 'Miner Armor' },
+    { id: 'T8_ARMOR_GATHERER_SET5',  name: 'Quarrier Armor' },
+    { id: 'T8_ARMOR_GATHERER_SET6',  name: 'Lumberjack Armor' },
+  ],
   cloth: [
     { id: 'T8_ARMOR_CLOTH_SET1',    name: 'Scholar Robe' },
     { id: 'T8_ARMOR_CLOTH_SET2',    name: 'Cleric Robe' },
@@ -268,6 +289,14 @@ export const ARMOR_CHEST = {
 // ─── ARMOR — HEAD ───────────────────────────────────────────────────────────
 
 export const ARMOR_HEAD = {
+  gathering: [
+    { id: 'T8_HEAD_GATHERER_SET1',   name: 'Reaper Hat' },
+    { id: 'T8_HEAD_GATHERER_SET2',   name: 'Fisher Hat' },
+    { id: 'T8_HEAD_GATHERER_SET3',   name: 'Skinner Cap' },
+    { id: 'T8_HEAD_GATHERER_SET4',   name: 'Miner Cap' },
+    { id: 'T8_HEAD_GATHERER_SET5',   name: 'Quarrier Cap' },
+    { id: 'T8_HEAD_GATHERER_SET6',   name: 'Lumberjack Hat' },
+  ],
   cloth: [
     { id: 'T8_HEAD_CLOTH_SET1',    name: 'Scholar Cowl' },
     { id: 'T8_HEAD_CLOTH_SET2',    name: 'Cleric Cowl' },
@@ -306,6 +335,14 @@ export const ARMOR_HEAD = {
 // ─── ARMOR — SHOES ──────────────────────────────────────────────────────────
 
 export const ARMOR_SHOES = {
+  gathering: [
+    { id: 'T8_SHOES_GATHERER_SET1',  name: 'Reaper Workboots' },
+    { id: 'T8_SHOES_GATHERER_SET2',  name: 'Fisher Workboots' },
+    { id: 'T8_SHOES_GATHERER_SET3',  name: 'Skinner Workboots' },
+    { id: 'T8_SHOES_GATHERER_SET4',  name: 'Miner Workboots' },
+    { id: 'T8_SHOES_GATHERER_SET5',  name: 'Quarrier Workboots' },
+    { id: 'T8_SHOES_GATHERER_SET6',  name: 'Lumberjack Workboots' },
+  ],
   cloth: [
     { id: 'T8_SHOES_CLOTH_SET1',    name: 'Scholar Sandals' },
     { id: 'T8_SHOES_CLOTH_SET2',    name: 'Cleric Sandals' },
