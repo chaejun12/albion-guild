@@ -1,15 +1,15 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { dbGetSheets, dbCreateSheet, DB_READY } from '@/lib/db'
+import { dbGetSheets, dbGetPublicSheets, dbCreateSheet, DB_READY } from '@/lib/db'
 import { getSheets, createSheet } from '@/lib/store'
 
 export async function GET() {
   if (!DB_READY) {
-    // Supabase 미설정 시 로컬 스토리지 데이터는 클라이언트에서 처리
     return NextResponse.json({ fallback: true })
   }
-  const sheets = await dbGetSheets()
+  const session = await getServerSession(authOptions)
+  const sheets = session?.user?.isAdmin ? await dbGetSheets() : await dbGetPublicSheets()
   return NextResponse.json(sheets)
 }
 

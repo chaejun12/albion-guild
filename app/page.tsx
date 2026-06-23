@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useSession, signIn, signOut } from 'next-auth/react'
 import { Sheet } from '@/lib/types'
 import { usePermissions } from '@/lib/usePermissions'
-import { getSheets, deleteSheet, createSheet } from '@/lib/store'
+import { getSheets, getPublicSheets, deleteSheet, createSheet, setSheetPublic } from '@/lib/store'
 import { DB_READY } from '@/lib/db'
 import Link from 'next/link'
 
@@ -23,9 +23,9 @@ export default function Home() {
         const data = await res.json()
         if (!data.fallback) { setSheets(data); return }
       }
-      setSheets(getSheets())
+      setSheets(perms.isAdmin ? getSheets() : getPublicSheets())
     } finally { setLoading(false) }
-  }, [])
+  }, [perms.isAdmin])
 
   useEffect(() => { fetchSheets() }, [fetchSheets])
 
@@ -54,6 +54,21 @@ export default function Home() {
       if (!res.ok) { alert((await res.json()).error); return }
     } else {
       deleteSheet(id)
+    }
+    fetchSheets()
+  }
+
+  async function handleToggleShare(id: string, currentIsPublic: boolean) {
+    const next = !currentIsPublic
+    if (DB_READY) {
+      const res = await fetch(`/api/sheets/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isPublic: next }),
+      })
+      if (!res.ok) { alert((await res.json()).error); return }
+    } else {
+      setSheetPublic(id, next)
     }
     fetchSheets()
   }
@@ -145,6 +160,12 @@ export default function Home() {
                     <Link href={`/sheet/${sheet.id}`} className="flex-1 text-center py-1.5 rounded text-sm font-medium" style={{ background: '#253045', color: '#C8A84B' }}>
                       열기
                     </Link>
+                    {perms.isAdmin && (
+                      <button onClick={() => handleToggleShare(sheet.id, sheet.isPublic)}
+                        className={`px-3 py-1.5 rounded text-sm font-medium ${sheet.isPublic ? 'text-yellow-400 hover:bg-yellow-900/30' : 'text-green-400 hover:bg-green-900/30'}`}>
+                        {sheet.isPublic ? '공유 취소' : '공유'}
+                      </button>
+                    )}
                     {perms.canDeleteSheet && (
                       <button onClick={() => handleDelete(sheet.id)} className="px-3 py-1.5 rounded text-sm text-red-400 hover:bg-red-900/30">
                         삭제

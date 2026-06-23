@@ -45,7 +45,13 @@ function load(): Sheet[] {
 function save(sheets: Sheet[]) { localStorage.setItem(KEY, JSON.stringify(sheets)) }
 
 export function getSheets(): Sheet[] { return load() }
+export function getPublicSheets(): Sheet[] { return load().filter(s => s.isPublic) }
 export function getSheet(id: string) { return load().find(s => s.id === id) }
+export function setSheetPublic(id: string, isPublic: boolean) {
+  const sheets = load()
+  const idx = sheets.findIndex(s => s.id === id)
+  if (idx >= 0) { sheets[idx].isPublic = isPublic; save(sheets) }
+}
 export function saveSheet(sheet: Sheet) {
   const sheets = load()
   const idx = sheets.findIndex(s => s.id === sheet.id)

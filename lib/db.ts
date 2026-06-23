@@ -36,6 +36,26 @@ export async function dbGetSheets(): Promise<Sheet[]> {
   return (data ?? []).map(rowToSheet)
 }
 
+export async function dbGetPublicSheets(): Promise<Sheet[]> {
+  if (!db) return []
+  const { data, error } = await db
+    .from('sheets')
+    .select('id, name, description, is_public, parties, created_at, updated_at')
+    .eq('is_public', true)
+    .order('created_at', { ascending: false })
+  if (error) { console.error(error); return [] }
+  return (data ?? []).map(rowToSheet)
+}
+
+export async function dbSetSheetPublic(id: string, isPublic: boolean): Promise<void> {
+  if (!dbAdmin) throw new Error('DB not configured')
+  const { error } = await dbAdmin
+    .from('sheets')
+    .update({ is_public: isPublic, updated_at: new Date().toISOString() })
+    .eq('id', id)
+  if (error) throw error
+}
+
 export async function dbGetSheet(id: string): Promise<Sheet | null> {
   if (!db) return null
   const { data, error } = await db
