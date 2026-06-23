@@ -360,23 +360,23 @@ export const CAPES = [
 // ─── FOOD ───────────────────────────────────────────────────────────────────
 
 export const FOOD = [
-  // Omelette (T7 — Pork Omelette는 T7)
-  { id: 'T7_MEAL_OMELETTE',          name: 'Pork Omelette' },
-  { id: 'T7_MEAL_OMELETTE_FISH',     name: 'Fish Omelette' },
-  { id: 'T5_MEAL_OMELETTE',          name: 'Goat Omelette' },
-  // Stew
-  { id: 'T8_MEAL_STEW',             name: 'Beef Stew' },
-  { id: 'T8_MEAL_STEW_AVALON',      name: 'Avalonian Beef Stew' },
-  { id: 'T8_MEAL_STEW_FISH',        name: 'Deadwater Eel Stew' },
-  { id: 'T6_MEAL_STEW',             name: 'Mutton Stew' },
-  // Sandwich
-  { id: 'T8_MEAL_SANDWICH',         name: 'Beef Sandwich' },
-  { id: 'T8_MEAL_SANDWICH_AVALON',  name: 'Avalonian Beef Sandwich' },
-  { id: 'T8_MEAL_SANDWICH_FISH',    name: 'Thunderfall Lurcher Sandwich' },
-  // Roast
-  { id: 'T7_MEAL_ROAST',            name: 'Roast Pork' },
-  { id: 'T5_MEAL_ROAST',            name: 'Roast Goose' },
-  { id: 'T3_MEAL_ROAST',            name: 'Roast Chicken' },
+  // Omelette (Energy Regen)
+  { id: 'T7_MEAL_OMELETTE',        name: 'Pork Omelette' },
+  { id: 'T7_MEAL_OMELETTE_FISH',   name: 'Fish Omelette' },
+  { id: 'T8_MEAL_OMELETTE',        name: 'Beef Omelette' },
+  // Stew (HP Regen)
+  { id: 'T7_MEAL_STEW',            name: 'Pork Stew' },
+  { id: 'T8_MEAL_STEW',            name: 'Beef Stew' },
+  { id: 'T8_MEAL_STEW_AVALON',     name: 'Avalonian Beef Stew' },
+  { id: 'T8_MEAL_STEW_FISH',       name: 'Deadwater Eel Stew' },
+  // Sandwich (Max HP)
+  { id: 'T7_MEAL_SANDWICH',        name: 'Pork Sandwich' },
+  { id: 'T8_MEAL_SANDWICH',        name: 'Beef Sandwich' },
+  { id: 'T8_MEAL_SANDWICH_AVALON', name: 'Avalonian Beef Sandwich' },
+  { id: 'T8_MEAL_SANDWICH_FISH',   name: 'Thunderfall Lurcher Sandwich' },
+  // Roast (Move Speed)
+  { id: 'T7_MEAL_ROAST',           name: 'Roast Pork' },
+  { id: 'T8_MEAL_ROAST',           name: 'Roast Beef' },
 ];
 
 // ─── POTIONS ────────────────────────────────────────────────────────────────
