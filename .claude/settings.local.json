@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:wiki.albiononline.com)",
+      "WebFetch(domain:albionzvzmanual.github.io)",
+      "WebFetch(domain:www.keengamer.com)",
+      "WebFetch(domain:namu.wiki)",
+      "WebFetch(domain:itemlevel.net)",
+      "WebFetch(domain:www.mmopixel.com)",
+      "WebFetch(domain:gameinfo.ca)",
+      "WebFetch(domain:metabattle.com)",
+      "WebFetch(domain:albiononlinegrind.com)",
+      "WebFetch(domain:albiononline2d.com)",
+      "WebFetch(domain:albiononline.com)",
+      "WebFetch(domain:guildorder.com)",
+      "WebFetch(domain:openalbion.com)",
+      "WebFetch(domain:api.openalbion.com)",
+      "WebFetch(domain:www.albion-online-data.com)",
+      "WebFetch(domain:www.albioncore.com)",
+      "WebFetch(domain:albionfreemarket.com)",
+      "PowerShell(node --version)",
+      "WebFetch(domain:www.albiononlinebuilds.com)",
+      "Skill(run)",
+      "PowerShell(winget list *)",
+      "PowerShell(winget install *)",
+      "PowerShell(npm *)",
+      "Bash(curl *)",
+      "PowerShell(Start-Process \"http://localhost:3000\")",
+      "PowerShell(cd \"C:\\\\Users\\\\cjs04\\\\OneDrive\\\\바탕 화면\\\\albion\"; Start-Process powershell -ArgumentList '-NoExit', '-Command', 'cd \"C:\\\\Users\\\\cjs04\\\\OneDrive\\\\바탕 화면\\\\albion\"; npm run dev' -WindowStyle Normal)"
+    ]
+  }
+}
