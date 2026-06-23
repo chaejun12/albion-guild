@@ -355,7 +355,9 @@ export const CAPES = [
   { id: 'T8_CAPEITEM_KEEPER',         name: 'Keeper Cape' },
   { id: 'T8_CAPEITEM_DEMON',          name: 'Demon Cape' },
   { id: 'T8_CAPEITEM_MORGANA',        name: 'Morgana Cape' },
-  { id: 'T8_CAPEITEM_HERETIC',        name: "Smuggler's Cape" },
+  { id: 'T8_CAPEITEM_HERETIC',        name: 'Heretic Cape' },
+  { id: 'T8_CAPEITEM_SMUGGLER',       name: "Smuggler's Cape" },
+  { id: 'T8_CAPEITEM_FW_BRECILIEN',   name: 'Brecilien Cape' },
 ];
 
 // ─── FOOD ───────────────────────────────────────────────────────────────────
