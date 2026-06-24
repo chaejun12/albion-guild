@@ -54,15 +54,13 @@ const OFFHAND_CATS = [
   { key: 'tome',   label: '마법서' },
 ]
 
-// BuildKey → 카테고리 목록 반환
 function getCatsFor(key: BuildKey) {
   if (key === 'weapon') return WEAPON_CATS
   if (key === 'offhand') return OFFHAND_CATS
   if (key === 'head' || key === 'chest' || key === 'shoes') return ARMOR_CATS
-  return null  // cape, food, potion → 카테고리 없이 바로 목록
+  return null
 }
 
-// BuildKey + category → 아이템 목록
 function getItems(key: BuildKey, cat: string): { id: string; name: string }[] {
   const W = WEAPONS as Record<string, { id: string; name: string }[]>
   const AH = ARMOR_HEAD as Record<string, { id: string; name: string }[]>
@@ -79,7 +77,6 @@ function getItems(key: BuildKey, cat: string): { id: string; name: string }[] {
   return []
 }
 
-// 아이템 ID → 이름 조회 (빌드 행 표시용)
 function getItemName(itemId: string): string {
   const all: { id: string; name: string }[] = [
     ...Object.values(WEAPONS as Record<string, { id: string; name: string }[]>).flat(),
@@ -99,12 +96,11 @@ export default function SheetPage({ params }: { params: Promise<{ id: string }> 
   const { id } = use(params)
   const [sheet, setSheet] = useState<Sheet | null>(null)
   const [notFound, setNotFound] = useState(false)
-  const [ctaActive, setCtaActive] = useState(false)
+  const [roleManageOpen, setRoleManageOpen] = useState(false)
 
-  // 모달 상태
   const [addPartyOpen, setAddPartyOpen] = useState(false)
   const [partyName, setPartyName] = useState('')
-  const [addRoleOpen, setAddRoleOpen] = useState<string | null>(null)  // partyId
+  const [addRoleOpen, setAddRoleOpen] = useState<string | null>(null)
   const [buildEditing, setBuildEditing] = useState<{ partyId: string; slotId: string; buildSlotId: string } | null>(null)
   const [playerModal, setPlayerModal] = useState<{ partyId: string; slotId: string; buildSlotId: string } | null>(null)
   const [playerInput, setPlayerInput] = useState({ nickname: '', ip: '' })
@@ -201,10 +197,10 @@ export default function SheetPage({ params }: { params: Promise<{ id: string }> 
     setBuildEditing(null)
   }
 
-  // ── 플레이어
-  function setPlayer(partyId: string, slotId: string, bsId: string) {
+  // ── 신청
+  function applyToSlot(partyId: string, slotId: string, bsId: string) {
     if (!sheet || !playerInput.nickname.trim()) return
-    const player: Player = {
+    const applicant: Player = {
       id: uid(),
       nickname: playerInput.nickname.trim(),
       discordId: session?.user?.id,
@@ -212,12 +208,36 @@ export default function SheetPage({ params }: { params: Promise<{ id: string }> 
     }
     persist({ ...sheet, parties: sheet.parties.map(p => p.id === partyId ? {
       ...p, slots: p.slots.map(s => s.id === slotId ? {
-        ...s, buildSlots: s.buildSlots.map(b => b.id === bsId ? { ...b, player } : b)
+        ...s, buildSlots: s.buildSlots.map(b => b.id === bsId
+          ? { ...b, applicants: [...(b.applicants || []), applicant] }
+          : b)
       } : s)
-    } : p) }, true)  // applyOnly = true
+    } : p) }, true)
     setPlayerInput({ nickname: '', ip: '' }); setPlayerModal(null)
   }
-  function removePlayer(partyId: string, slotId: string, bsId: string) {
+
+  function cancelApplication(partyId: string, slotId: string, bsId: string) {
+    if (!sheet || !session?.user?.id) return
+    const userId = session.user.id
+    persist({ ...sheet, parties: sheet.parties.map(p => p.id === partyId ? {
+      ...p, slots: p.slots.map(s => s.id === slotId ? {
+        ...s, buildSlots: s.buildSlots.map(b => b.id === bsId
+          ? { ...b, applicants: (b.applicants || []).filter(a => a.discordId !== userId) }
+          : b)
+      } : s)
+    } : p) }, true)
+  }
+
+  function confirmApplicant(partyId: string, slotId: string, bsId: string, applicant: Player) {
+    if (!sheet) return
+    persist({ ...sheet, parties: sheet.parties.map(p => p.id === partyId ? {
+      ...p, slots: p.slots.map(s => s.id === slotId ? {
+        ...s, buildSlots: s.buildSlots.map(b => b.id === bsId ? { ...b, player: applicant } : b)
+      } : s)
+    } : p) })
+  }
+
+  function removeConfirmed(partyId: string, slotId: string, bsId: string) {
     if (!sheet) return
     persist({ ...sheet, parties: sheet.parties.map(p => p.id === partyId ? {
       ...p, slots: p.slots.map(s => s.id === slotId ? {
@@ -225,23 +245,11 @@ export default function SheetPage({ params }: { params: Promise<{ id: string }> 
       } : s)
     } : p) })
   }
-  function toggleCta(partyId: string, slotId: string, bsId: string, status: Player['ctaStatus']) {
-    if (!sheet) return
-    persist({ ...sheet, parties: sheet.parties.map(p => p.id === partyId ? {
-      ...p, slots: p.slots.map(s => s.id === slotId ? {
-        ...s, buildSlots: s.buildSlots.map(b => b.id === bsId && b.player ? {
-          ...b, player: { ...b.player, ctaStatus: b.player.ctaStatus === status ? undefined : status }
-        } : b)
-      } : s)
-    } : p) })
-  }
 
-  // ── 통계 (방어 코드 포함 - 구버전 데이터 대비)
+  // ── 통계
   const allBuildSlots = sheet?.parties.flatMap(p => p.slots.flatMap(s => s.buildSlots || [])).filter(Boolean) ?? []
-  const allPlayers = allBuildSlots.flatMap(b => b?.player ? [b.player] : [])
+  const confirmedCount = allBuildSlots.filter(b => b?.player).length
   const totalSlots = allBuildSlots.length
-  const ctaStats = { attend: 0, absent: 0, late: 0 }
-  allPlayers.forEach(pl => { if (pl.ctaStatus) ctaStats[pl.ctaStatus]++ })
   const roleCounts: Record<string, { filled: number; total: number }> = {}
   sheet?.parties.flatMap(p => p.slots).forEach(s => {
     const preset = ROLE_PRESETS[s.role]
@@ -266,10 +274,13 @@ export default function SheetPage({ params }: { params: Promise<{ id: string }> 
       <header className="border-b px-4 py-3 flex items-center gap-3 sticky top-0 z-30" style={{ borderColor: '#2A3448', background: '#141C28' }}>
         <Link href="/" className="text-gray-400 hover:text-gray-200 text-sm">← 목록</Link>
         <h1 className="font-bold text-gray-100 flex-1 truncate">{sheet.name}</h1>
-        <span className="text-sm text-gray-400">{allPlayers.length}/{totalSlots}</span>
-        {perms.canEditSheet && (ctaActive
-          ? <button onClick={() => setCtaActive(false)} className="px-3 py-1.5 rounded text-sm font-medium bg-red-800 text-red-200">CTA 종료</button>
-          : <button onClick={() => setCtaActive(true)} className="px-3 py-1.5 rounded text-sm font-medium" style={{ background: '#C8A84B', color: '#0F1419' }}>CTA 시작</button>
+        <span className="text-sm text-gray-400">{confirmedCount}/{totalSlots}</span>
+        {perms.canEditSheet && (
+          <button onClick={() => setRoleManageOpen(true)}
+            className="px-3 py-1.5 rounded text-sm font-medium"
+            style={{ background: '#C8A84B', color: '#0F1419' }}>
+            역할 수정
+          </button>
         )}
         {perms.canEditSheet && (
           <button onClick={() => setAddPartyOpen(true)} className="px-3 py-1.5 rounded text-sm text-gray-300" style={{ background: '#253045' }}>+ 파티</button>
@@ -284,7 +295,6 @@ export default function SheetPage({ params }: { params: Promise<{ id: string }> 
         <main className="flex-1 overflow-y-auto p-4 space-y-5">
           {sheet.parties.map(party => (
             <div key={party.id} className="rounded-lg border" style={{ borderColor: '#2A3448', background: '#1A2030' }}>
-              {/* 파티 헤더 */}
               <div className="flex items-center gap-3 px-4 py-2.5 border-b" style={{ borderColor: '#2A3448' }}>
                 <h2 className="font-bold text-gray-100 flex-1">{party.name}</h2>
                 {perms.canEditSheet && <>
@@ -293,13 +303,11 @@ export default function SheetPage({ params }: { params: Promise<{ id: string }> 
                 </>}
               </div>
 
-              {/* 역할 슬롯 목록 */}
               <div className="p-3 space-y-3">
                 {party.slots.map(roleSlot => {
                   const preset = ROLE_PRESETS[roleSlot.role] ?? { label: roleSlot.role || '역할', color: '#666' }
                   return (
                     <div key={roleSlot.id} className="rounded overflow-hidden" style={{ background: '#111827' }}>
-                      {/* 역할 헤더 */}
                       <div className="flex items-center gap-2 px-3 py-2" style={{ borderLeft: `4px solid ${preset.color}`, background: '#192033' }}>
                         <span className="text-sm font-bold" style={{ color: preset.color }}>{preset.label}</span>
                         <span className="text-xs text-gray-500">{(roleSlot.buildSlots||[]).filter(b => b?.player).length}/{(roleSlot.buildSlots||[]).length}</span>
@@ -310,22 +318,21 @@ export default function SheetPage({ params }: { params: Promise<{ id: string }> 
                         </>}
                       </div>
 
-                      {/* 빌드 슬롯들 */}
                       <div className="divide-y" style={{ borderColor: '#1F2937' }}>
                         {(roleSlot.buildSlots || []).map((bs, idx) => (
                           <BuildRow
                             key={bs.id}
                             bs={bs}
                             idx={idx}
-                            ctaActive={ctaActive}
                             canEdit={perms.canEditSheet}
                             canApply={perms.canApply}
+                            myDiscordId={session?.user?.id}
                             onEditBuild={() => setBuildEditing({ partyId: party.id, slotId: roleSlot.id, buildSlotId: bs.id })}
                             onCopy={() => copyBuildSlot(party.id, roleSlot.id, bs.id)}
                             onDelete={() => deleteBuildSlot(party.id, roleSlot.id, bs.id)}
                             onSignup={() => { setPlayerInput({ nickname: session?.user?.name ?? '', ip: '' }); setPlayerModal({ partyId: party.id, slotId: roleSlot.id, buildSlotId: bs.id }) }}
-                            onRemovePlayer={() => removePlayer(party.id, roleSlot.id, bs.id)}
-                            onToggleCta={(status) => toggleCta(party.id, roleSlot.id, bs.id, status)}
+                            onCancelApply={() => cancelApplication(party.id, roleSlot.id, bs.id)}
+                            onRemoveConfirmed={() => removeConfirmed(party.id, roleSlot.id, bs.id)}
                           />
                         ))}
                         {(roleSlot.buildSlots||[]).length === 0 && (
@@ -352,20 +359,9 @@ export default function SheetPage({ params }: { params: Promise<{ id: string }> 
         {/* 우측 통계 */}
         <aside className="w-52 border-l p-4 space-y-5 overflow-y-auto" style={{ borderColor: '#2A3448', background: '#141C28' }}>
           <div>
-            <p className="text-xs text-gray-500 mb-1">총 인원</p>
-            <p className="text-2xl font-bold" style={{ color: '#C8A84B' }}>{allPlayers.length}<span className="text-base text-gray-500">/{totalSlots}</span></p>
+            <p className="text-xs text-gray-500 mb-1">확정 인원</p>
+            <p className="text-2xl font-bold" style={{ color: '#C8A84B' }}>{confirmedCount}<span className="text-base text-gray-500">/{totalSlots}</span></p>
           </div>
-          {ctaActive && (
-            <div>
-              <p className="text-xs text-gray-500 mb-2">CTA 출석</p>
-              <div className="space-y-1 text-sm">
-                <div className="flex justify-between"><span className="text-green-400">참석</span><span>{ctaStats.attend}</span></div>
-                <div className="flex justify-between"><span className="text-red-400">불참</span><span>{ctaStats.absent}</span></div>
-                <div className="flex justify-between"><span className="text-yellow-400">늦참</span><span>{ctaStats.late}</span></div>
-                <div className="flex justify-between text-gray-500"><span>미응답</span><span>{allPlayers.length - ctaStats.attend - ctaStats.absent - ctaStats.late}</span></div>
-              </div>
-            </div>
-          )}
           {Object.keys(roleCounts).length > 0 && (
             <div>
               <p className="text-xs text-gray-500 mb-2">역할별</p>
@@ -382,7 +378,7 @@ export default function SheetPage({ params }: { params: Promise<{ id: string }> 
         </aside>
       </div>
 
-      {/* ── 모달: 파티 추가 */}
+      {/* 모달: 파티 추가 */}
       {addPartyOpen && (
         <ModalShell title="파티 추가" onClose={() => setAddPartyOpen(false)}>
           <input value={partyName} onChange={e => setPartyName(e.target.value)} onKeyDown={e => e.key === 'Enter' && addParty()}
@@ -396,7 +392,7 @@ export default function SheetPage({ params }: { params: Promise<{ id: string }> 
         </ModalShell>
       )}
 
-      {/* ── 모달: 역할 추가 */}
+      {/* 모달: 역할 추가 */}
       {addRoleOpen && (
         <ModalShell title="역할 선택" onClose={() => setAddRoleOpen(null)}>
           <div className="grid grid-cols-3 gap-3">
@@ -414,7 +410,7 @@ export default function SheetPage({ params }: { params: Promise<{ id: string }> 
         </ModalShell>
       )}
 
-      {/* ── 모달: 빌드 설정 */}
+      {/* 모달: 빌드 설정 */}
       {buildEditing && (() => {
         const bs = sheet.parties.find(p => p.id === buildEditing.partyId)
           ?.slots.find(s => s.id === buildEditing.slotId)
@@ -429,14 +425,14 @@ export default function SheetPage({ params }: { params: Promise<{ id: string }> 
         )
       })()}
 
-      {/* ── 모달: 플레이어 신청 */}
+      {/* 모달: 슬롯 신청 */}
       {playerModal && (
         <ModalShell title="슬롯 신청" onClose={() => setPlayerModal(null)}>
           <div className="space-y-3">
             <div>
               <label className="text-xs text-gray-400 mb-1 block">닉네임</label>
               <input value={playerInput.nickname} onChange={e => setPlayerInput(f => ({ ...f, nickname: e.target.value }))}
-                onKeyDown={e => e.key === 'Enter' && playerModal && setPlayer(playerModal.partyId, playerModal.slotId, playerModal.buildSlotId)}
+                onKeyDown={e => e.key === 'Enter' && playerModal && applyToSlot(playerModal.partyId, playerModal.slotId, playerModal.buildSlotId)}
                 placeholder="인게임 닉네임" autoFocus
                 className="w-full px-3 py-2 rounded border text-gray-100 text-sm outline-none"
                 style={{ background: '#253045', borderColor: '#2A3448' }} />
@@ -450,30 +446,49 @@ export default function SheetPage({ params }: { params: Promise<{ id: string }> 
             </div>
           </div>
           <div className="flex gap-3 mt-4">
-            <Btn primary onClick={() => playerModal && setPlayer(playerModal.partyId, playerModal.slotId, playerModal.buildSlotId)}>확인</Btn>
+            <Btn primary onClick={() => playerModal && applyToSlot(playerModal.partyId, playerModal.slotId, playerModal.buildSlotId)}>신청</Btn>
             <Btn onClick={() => setPlayerModal(null)}>취소</Btn>
           </div>
         </ModalShell>
+      )}
+
+      {/* 모달: 역할 수정 */}
+      {roleManageOpen && (
+        <RoleManageModal
+          sheet={sheet}
+          onConfirm={confirmApplicant}
+          onUnconfirm={removeConfirmed}
+          onClose={() => setRoleManageOpen(false)}
+        />
       )}
     </div>
   )
 }
 
-// ── 빌드 행 컴포넌트 ──────────────────────────────────────────────────────────
+// ── BuildRow ──────────────────────────────────────────────────────────────────
 
-function BuildRow({ bs, idx, ctaActive, canEdit, canApply, onEditBuild, onCopy, onDelete, onSignup, onRemovePlayer, onToggleCta }: {
-  bs: BuildSlot; idx: number; ctaActive: boolean; canEdit: boolean; canApply: boolean
-  onEditBuild: () => void; onCopy: () => void; onDelete: () => void
-  onSignup: () => void; onRemovePlayer: () => void
-  onToggleCta: (s: Player['ctaStatus']) => void
+function BuildRow({ bs, idx, canEdit, canApply, myDiscordId, onEditBuild, onCopy, onDelete, onSignup, onCancelApply, onRemoveConfirmed }: {
+  bs: BuildSlot
+  idx: number
+  canEdit: boolean
+  canApply: boolean
+  myDiscordId?: string
+  onEditBuild: () => void
+  onCopy: () => void
+  onDelete: () => void
+  onSignup: () => void
+  onCancelApply: () => void
+  onRemoveConfirmed: () => void
 }) {
   const hasBuild = Object.values(bs.build).some(Boolean)
+  const applicants = bs.applicants || []
+  const isApplied = !!myDiscordId && applicants.some(a => a.discordId === myDiscordId)
+
   return (
     <div className="flex items-center gap-3 px-3 py-2" style={{ background: '#111827' }}>
-      {/* 번호 */}
       <span className="text-xs text-gray-600 w-4 flex-shrink-0">{idx + 1}</span>
 
-      {/* 빌드 아이콘 8개 */}
+      {/* 빌드 아이콘 */}
       <div className="flex gap-1 flex-shrink-0">
         {BUILD_SLOT_ORDER.map(({ key, label }) => {
           const weaponIs2H = isTwoHanded(bs.build.weapon)
@@ -481,7 +496,7 @@ function BuildRow({ bs, idx, ctaActive, canEdit, canApply, onEditBuild, onCopy, 
           const itemId = is2HSlot ? bs.build.weapon : bs.build[key]
           return (
             <div key={key} title={is2HSlot ? '양손 무기' : (itemId ? `${label}: ${getItemName(itemId)}` : label)}
-              className="relative group" style={{ opacity: is2HSlot ? 0.4 : 1 }}>
+              style={{ opacity: is2HSlot ? 0.4 : 1 }}>
               {itemId
                 // eslint-disable-next-line @next/next/no-img-element
                 ? <img src={getIconUrl(itemId)} alt={label} width={36} height={36} className="rounded border" style={{ borderColor: '#2A3448' }} loading="eager" />
@@ -492,36 +507,34 @@ function BuildRow({ bs, idx, ctaActive, canEdit, canApply, onEditBuild, onCopy, 
         })}
       </div>
 
-      {/* 플레이어 or 신청 */}
+      {/* 플레이어 영역 */}
       <div className="flex-1 min-w-0">
         {bs.player ? (
           <div className="flex items-center gap-2">
-            {ctaActive && (
-              <div className="flex gap-1">
-                {(['attend', 'absent', 'late'] as const).map(st => (
-                  <button key={st} onClick={() => onToggleCta(st)}
-                    className={`w-5 h-5 rounded-full text-[9px] font-bold flex items-center justify-center transition-colors ${bs.player?.ctaStatus === st ? ctaBg(st) : 'bg-gray-700 text-gray-400'}`}>
-                    {st === 'attend' ? '✓' : st === 'absent' ? '✗' : '~'}
-                  </button>
-                ))}
-              </div>
-            )}
-            <span className={`text-sm font-medium truncate ${bs.player.ctaStatus ? ctaText(bs.player.ctaStatus) : 'text-gray-200'}`}>
-              {bs.player.nickname}
-            </span>
+            <span className="text-xs px-1.5 py-0.5 rounded text-green-300 font-bold" style={{ background: '#14532d44' }}>✓</span>
+            <span className="text-sm font-medium text-gray-200 truncate">{bs.player.nickname}</span>
             {bs.player.currentIP && <span className="text-xs text-gray-500 flex-shrink-0">{bs.player.currentIP}</span>}
-            {(canEdit || canApply) && (
-              <button onClick={onRemovePlayer} className="text-gray-600 hover:text-red-400 text-sm flex-shrink-0">×</button>
+            {canEdit && (
+              <button onClick={onRemoveConfirmed} className="text-gray-600 hover:text-red-400 text-sm flex-shrink-0 ml-auto">×</button>
             )}
           </div>
         ) : (
-          canApply
-            ? <button onClick={onSignup} className="text-xs text-gray-500 hover:text-yellow-400 transition-colors">+ 신청</button>
-            : <span className="text-xs text-gray-700">— 로그인 필요</span>
+          <div className="flex items-center gap-2">
+            {applicants.length > 0 && (
+              <span className="text-xs text-yellow-500">{applicants.length}명 신청</span>
+            )}
+            {isApplied ? (
+              <button onClick={onCancelApply} className="text-xs text-red-400 hover:text-red-300 transition-colors">신청 취소</button>
+            ) : (
+              canApply
+                ? <button onClick={onSignup} className="text-xs text-gray-500 hover:text-yellow-400 transition-colors">+ 신청</button>
+                : applicants.length === 0 && <span className="text-xs text-gray-700">— 비어있음</span>
+            )}
+          </div>
         )}
       </div>
 
-      {/* 액션 버튼 - 관리자만 */}
+      {/* 관리자 액션 */}
       {canEdit && (
         <div className="flex gap-1 flex-shrink-0">
           <button onClick={onEditBuild} className="text-[11px] px-2 py-0.5 rounded text-gray-400 hover:text-gray-200 transition-colors"
@@ -532,6 +545,150 @@ function BuildRow({ bs, idx, ctaActive, canEdit, canApply, onEditBuild, onCopy, 
           <button onClick={onDelete} className="text-[11px] text-red-700 hover:text-red-500">×</button>
         </div>
       )}
+    </div>
+  )
+}
+
+// ── 역할 수정 모달 ────────────────────────────────────────────────────────────
+
+type BsEntry = {
+  partyId: string
+  partyName: string
+  slotId: string
+  role: RoleType
+  bs: BuildSlot
+  idx: number
+}
+
+function MiniIcons({ build }: { build: Build }) {
+  return (
+    <div className="flex gap-0.5 flex-shrink-0">
+      {BUILD_SLOT_ORDER.map(({ key, label }) => {
+        const weaponIs2H = isTwoHanded(build.weapon)
+        const is2HSlot = key === 'offhand' && weaponIs2H
+        const itemId = is2HSlot ? build.weapon : build[key]
+        return (
+          <div key={key} title={label} style={{ opacity: is2HSlot ? 0.3 : 1 }}>
+            {itemId
+              // eslint-disable-next-line @next/next/no-img-element
+              ? <img src={getIconUrl(itemId)} alt={label} width={28} height={28} className="rounded" loading="eager" />
+              : <div className="w-7 h-7 rounded" style={{ background: '#1F2937' }} />
+            }
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+function RoleManageModal({ sheet, onConfirm, onUnconfirm, onClose }: {
+  sheet: Sheet
+  onConfirm: (partyId: string, slotId: string, bsId: string, applicant: Player) => void
+  onUnconfirm: (partyId: string, slotId: string, bsId: string) => void
+  onClose: () => void
+}) {
+  const entries: BsEntry[] = sheet.parties.flatMap(p =>
+    p.slots.flatMap(s =>
+      (s.buildSlots || []).map((bs, idx) => ({
+        partyId: p.id, partyName: p.name, slotId: s.id, role: s.role, bs, idx,
+      }))
+    )
+  )
+
+  const withActivity = entries.filter(e => (e.bs.applicants || []).length > 0 || e.bs.player)
+  const withoutActivity = entries.filter(e => !(e.bs.applicants || []).length && !e.bs.player)
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center z-50" style={{ background: 'rgba(0,0,0,0.85)' }} onClick={onClose}>
+      <div className="rounded-xl border w-full max-w-3xl max-h-[85vh] flex flex-col" style={{ background: '#1A2030', borderColor: '#2A3448' }} onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between px-5 py-4 border-b flex-shrink-0" style={{ borderColor: '#2A3448' }}>
+          <h3 className="font-bold text-gray-100 text-lg">역할 수정</h3>
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-gray-500">신청 {withActivity.length} · 미신청 {withoutActivity.length}</span>
+            <button onClick={onClose} className="text-gray-500 hover:text-gray-300 text-xl">×</button>
+          </div>
+        </div>
+
+        <div className="overflow-y-auto flex-1 p-5 space-y-6">
+          {/* 신청된 역할 */}
+          {withActivity.length > 0 && (
+            <section>
+              <h4 className="text-xs font-bold text-yellow-400 uppercase tracking-wide mb-3">신청된 역할 ({withActivity.length})</h4>
+              <div className="space-y-3">
+                {withActivity.map(({ partyId, partyName, slotId, role, bs, idx }) => {
+                  const preset = ROLE_PRESETS[role] ?? { label: role, color: '#666' }
+                  const applicants = bs.applicants || []
+                  return (
+                    <div key={bs.id} className="rounded-lg border p-3 space-y-2" style={{ background: '#111827', borderColor: '#2A3448' }}>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-xs font-bold px-2 py-0.5 rounded" style={{ background: `${preset.color}22`, color: preset.color }}>{preset.label}</span>
+                        <span className="text-xs text-gray-500">{partyName} · 슬롯 {idx + 1}</span>
+                        <MiniIcons build={bs.build} />
+                      </div>
+
+                      {/* 확정된 플레이어 */}
+                      {bs.player && (
+                        <div className="flex items-center gap-2 px-3 py-2 rounded" style={{ background: '#14532d33', border: '1px solid #166534' }}>
+                          <span className="text-xs text-green-400 font-bold">✓ 확정</span>
+                          <span className="text-sm text-gray-200 font-medium">{bs.player.nickname}</span>
+                          {bs.player.currentIP && <span className="text-xs text-gray-500">{bs.player.currentIP} IP</span>}
+                          <button onClick={() => onUnconfirm(partyId, slotId, bs.id)}
+                            className="ml-auto text-xs text-red-500 hover:text-red-400 px-2 py-0.5 rounded"
+                            style={{ background: '#2A1A1A' }}>
+                            확정 취소
+                          </button>
+                        </div>
+                      )}
+
+                      {/* 신청자 목록 */}
+                      {applicants.length > 0 && (
+                        <div className="space-y-1">
+                          {applicants.map(applicant => (
+                            <div key={applicant.id} className="flex items-center gap-2 px-3 py-1.5 rounded" style={{ background: '#192033' }}>
+                              <span className="text-sm text-gray-300">{applicant.nickname}</span>
+                              {applicant.currentIP && <span className="text-xs text-gray-500">{applicant.currentIP} IP</span>}
+                              {!bs.player && (
+                                <button onClick={() => onConfirm(partyId, slotId, bs.id, applicant)}
+                                  className="ml-auto text-xs px-3 py-0.5 rounded font-medium"
+                                  style={{ background: '#C8A84B', color: '#0F1419' }}>
+                                  확정
+                                </button>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            </section>
+          )}
+
+          {/* 미신청 역할 */}
+          {withoutActivity.length > 0 && (
+            <section>
+              <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-3">미신청 역할 ({withoutActivity.length})</h4>
+              <div className="space-y-2">
+                {withoutActivity.map(({ partyName, role, bs, idx }) => {
+                  const preset = ROLE_PRESETS[role] ?? { label: role, color: '#666' }
+                  return (
+                    <div key={bs.id} className="rounded-lg border p-3 flex items-center gap-3 flex-wrap" style={{ background: '#0F1419', borderColor: '#1F2937' }}>
+                      <span className="text-xs font-bold px-2 py-0.5 rounded flex-shrink-0" style={{ background: `${preset.color}22`, color: preset.color }}>{preset.label}</span>
+                      <span className="text-xs text-gray-600">{partyName} · 슬롯 {idx + 1}</span>
+                      <MiniIcons build={bs.build} />
+                    </div>
+                  )
+                })}
+              </div>
+            </section>
+          )}
+
+          {entries.length === 0 && (
+            <p className="text-center text-gray-500 py-10">등록된 슬롯이 없습니다</p>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
@@ -547,10 +704,7 @@ function BuildEditorModal({ initial, onSave, onClose }: { initial: Build; onSave
   function handleSetItem(key: BuildKey, itemId: string) {
     setBuild(b => {
       const next = { ...b, [key]: itemId }
-      // 무기를 양손으로 바꾸면 보조 슬롯 초기화
-      if (key === 'weapon' && isTwoHanded(itemId)) {
-        delete next.offhand
-      }
+      if (key === 'weapon' && isTwoHanded(itemId)) delete next.offhand
       return next
     })
     setPickingKey(null)
@@ -562,7 +716,6 @@ function BuildEditorModal({ initial, onSave, onClose }: { initial: Build; onSave
   }
 
   function handleClickSlot(key: BuildKey) {
-    // 양손 무기 상태에서 보조 슬롯 클릭 → 무시
     if (key === 'offhand' && is2H) return
     setPickingKey(key === pickingKey ? null : key)
   }
@@ -575,14 +728,11 @@ function BuildEditorModal({ initial, onSave, onClose }: { initial: Build; onSave
           <button onClick={onClose} className="text-gray-500 hover:text-gray-300 text-xl">×</button>
         </div>
 
-        {/* 8슬롯 그리드 */}
         <div className="grid grid-cols-4 gap-3 mb-5">
           {BUILD_SLOT_ORDER.map(({ key, label }) => {
             const is2HOffhand = key === 'offhand' && is2H
-            // 양손 무기면 보조 슬롯에 무기 아이콘을 흐리게 표시
             const displayId = is2HOffhand ? build.weapon : build[key]
             const isActive = pickingKey === key && !is2HOffhand
-
             return (
               <button key={key} onClick={() => handleClickSlot(key)}
                 className={`flex flex-col items-center gap-1.5 p-2 rounded-lg border-2 transition-all ${is2HOffhand ? 'cursor-not-allowed' : 'hover:border-yellow-500'}`}
@@ -603,14 +753,10 @@ function BuildEditorModal({ initial, onSave, onClose }: { initial: Build; onSave
           })}
         </div>
 
-        {/* 양손 무기 알림 */}
         {is2H && (
-          <p className="text-xs text-gray-500 mb-3 text-center">
-            ⚔️ 양손 무기 — 보조 장비를 장착할 수 없습니다
-          </p>
+          <p className="text-xs text-gray-500 mb-3 text-center">⚔️ 양손 무기 — 보조 장비를 장착할 수 없습니다</p>
         )}
 
-        {/* 선택된 슬롯이 있으면 아이템 피커 (양손 보조 슬롯이면 피커 열지 않음) */}
         {pickingKey && !(pickingKey === 'offhand' && is2H) && (
           <ItemPicker
             slotKey={pickingKey}
@@ -630,7 +776,6 @@ function BuildEditorModal({ initial, onSave, onClose }: { initial: Build; onSave
   )
 }
 
-
 // ── 아이템 피커 ───────────────────────────────────────────────────────────────
 
 function ItemPicker({ slotKey, currentId, onSelect, onClear, onClose }: {
@@ -639,27 +784,21 @@ function ItemPicker({ slotKey, currentId, onSelect, onClear, onClose }: {
 }) {
   const cats = getCatsFor(slotKey)
   const [selectedCat, setSelectedCat] = useState<string>(cats ? cats[0].key : '')
-
   const catLabel = cats?.find(c => c.key === selectedCat)?.label || ''
   const items = getItems(slotKey, selectedCat)
   const slotLabel = BUILD_SLOT_ORDER.find(s => s.key === slotKey)?.label || slotKey
 
   return (
     <div className="mt-4 rounded-xl border overflow-hidden" style={{ borderColor: '#2A3448', background: '#111827' }}>
-      {/* 피커 헤더 */}
       <div className="flex items-center justify-between px-3 py-2 border-b" style={{ borderColor: '#2A3448' }}>
         <span className="text-sm font-medium text-gray-200">{slotLabel} 선택</span>
         <div className="flex gap-2">
           {currentId && (
-            <button onClick={onClear} className="text-xs text-red-500 hover:text-red-400 px-2 py-0.5 rounded" style={{ background: '#2A1A1A' }}>
-              제거
-            </button>
+            <button onClick={onClear} className="text-xs text-red-500 hover:text-red-400 px-2 py-0.5 rounded" style={{ background: '#2A1A1A' }}>제거</button>
           )}
           <button onClick={onClose} className="text-gray-500 hover:text-gray-300">×</button>
         </div>
       </div>
-
-      {/* 카테고리 탭 (있는 경우) */}
       {cats && (
         <div className="flex gap-1.5 px-3 py-2 overflow-x-auto border-b" style={{ borderColor: '#2A3448' }}>
           {cats.map(c => (
@@ -671,8 +810,6 @@ function ItemPicker({ slotKey, currentId, onSelect, onClear, onClose }: {
           ))}
         </div>
       )}
-
-      {/* 아이템 그리드 */}
       <div className="grid grid-cols-4 gap-2 p-3 max-h-56 overflow-y-auto">
         {items.map((item: { id: string; name: string }) => (
           <button key={item.id} onClick={() => onSelect(item.id)}
@@ -691,7 +828,7 @@ function ItemPicker({ slotKey, currentId, onSelect, onClear, onClose }: {
   )
 }
 
-// ── 공통 UI 요소 ──────────────────────────────────────────────────────────────
+// ── 공통 UI ───────────────────────────────────────────────────────────────────
 
 function ModalShell({ title, children, onClose }: { title: string; children: React.ReactNode; onClose: () => void }) {
   return (
@@ -715,11 +852,4 @@ function Btn({ children, primary, onClick }: { children: React.ReactNode; primar
       {children}
     </button>
   )
-}
-
-function ctaBg(st: string) {
-  return st === 'attend' ? 'bg-green-700 text-green-200' : st === 'absent' ? 'bg-red-800 text-red-200' : 'bg-yellow-700 text-yellow-200'
-}
-function ctaText(st: string) {
-  return st === 'attend' ? 'text-green-400' : st === 'absent' ? 'text-red-400' : 'text-yellow-400'
 }
