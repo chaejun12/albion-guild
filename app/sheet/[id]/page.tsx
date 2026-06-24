@@ -686,7 +686,7 @@ function RoleManageModal({ sheet, onConfirm, onUnconfirm, onClose }: {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50" style={{ background: 'rgba(0,0,0,0.85)' }} onClick={onClose}>
-      <div className="rounded-xl border w-full max-h-[90vh] flex flex-col mx-4" style={{ maxWidth: '1600px', background: '#1A2030', borderColor: '#2A3448' }} onClick={e => e.stopPropagation()}>
+      <div className="rounded-xl border w-full max-h-[90vh] flex flex-col mx-2" style={{ maxWidth: '1600px', background: '#1A2030', borderColor: '#2A3448' }} onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between px-5 py-4 border-b flex-shrink-0" style={{ borderColor: '#2A3448' }}>
           <h3 className="font-bold text-gray-100 text-lg">역할 수정</h3>
           <div className="flex items-center gap-3">
@@ -698,7 +698,7 @@ function RoleManageModal({ sheet, onConfirm, onUnconfirm, onClose }: {
         <div className="flex flex-1 min-h-0">
 
           {/* ── 왼쪽: 전체 신청 인원 + 미확정 인원 ── */}
-          <div className="w-72 flex-shrink-0 overflow-y-auto p-5 space-y-6 border-r" style={{ borderColor: '#2A3448' }}>
+          <div className="flex-1 min-w-0 overflow-y-auto p-5 space-y-6 border-r" style={{ borderColor: '#2A3448' }}>
             {allApplications.length > 0 && (() => {
               const uniqueApplicants = [...new Map(
                 allApplications.map(({ player }) => [player.discordId ?? player.id, player])
@@ -755,7 +755,7 @@ function RoleManageModal({ sheet, onConfirm, onUnconfirm, onClose }: {
           </div>
 
           {/* ── 가운데: 신청된 역할 (파티별 그룹) ── */}
-          <div className="flex-1 overflow-y-auto p-5 space-y-6 border-r" style={{ borderColor: '#2A3448' }}>
+          <div className="w-[500px] flex-shrink-0 overflow-y-auto p-5 space-y-6 border-r" style={{ borderColor: '#2A3448' }}>
             <h4 className="text-xs font-bold text-green-400 uppercase tracking-wide">신청된 역할</h4>
             {partiesWithEntries.length === 0 && (
               <p className="text-center text-gray-500 py-10">등록된 슬롯이 없습니다</p>
@@ -835,7 +835,10 @@ function RoleManageModal({ sheet, onConfirm, onUnconfirm, onClose }: {
                       <span className="text-xs font-bold flex-shrink-0" style={{ color: preset.color }}>{preset.label}</span>
                       <span className="text-sm text-gray-200 font-medium truncate flex-1">{bs.player!.nickname}</span>
                       <button onClick={() => onUnconfirm(partyId, slotId, bs.id)}
-                        className="text-gray-600 hover:text-red-400 text-sm leading-none flex-shrink-0 transition-colors">×</button>
+                        className="text-xs text-red-500 hover:text-red-400 px-2 py-0.5 rounded flex-shrink-0 transition-colors"
+                        style={{ background: '#2A1A1A' }}>
+                        확정 취소
+                      </button>
                     </div>
                     <MiniIcons build={bs.build} />
                   </div>
