@@ -606,10 +606,12 @@ function BuildRow({ bs, idx, canEdit, canApply, myDiscordId, applicationClosed, 
           return (
             <div key={key} title={is2HSlot ? '양손 무기' : (itemId ? `${label}: ${getItemName(itemId)}` : label)}
               style={{ opacity: is2HSlot ? 0.4 : 1 }}>
-              {itemId
-                // eslint-disable-next-line @next/next/no-img-element
-                ? <img src={getIconUrl(itemId)} alt={label} width={36} height={36} className="rounded border" style={{ borderColor: '#2A3448' }} loading="eager" />
-                : <div className="w-9 h-9 rounded border border-dashed flex items-center justify-center text-[9px] text-gray-700" style={{ borderColor: '#2A3448' }}>{label[0]}</div>
+              {itemId === 'FREE'
+                ? <div className="w-9 h-9 rounded border flex items-center justify-center text-[7px] font-bold" style={{ borderColor: '#2A3448', background: '#1a3a1a', color: '#4ade80' }}>FREE</div>
+                : itemId
+                  // eslint-disable-next-line @next/next/no-img-element
+                  ? <img src={getIconUrl(itemId)} alt={label} width={36} height={36} className="rounded border" style={{ borderColor: '#2A3448' }} loading="eager" />
+                  : <div className="w-9 h-9 rounded border border-dashed flex items-center justify-center text-[9px] text-gray-700" style={{ borderColor: '#2A3448' }}>{label[0]}</div>
               }
             </div>
           )
