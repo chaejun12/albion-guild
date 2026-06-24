@@ -107,3 +107,19 @@ export async function dbDeleteSheet(id: string): Promise<void> {
   const { error } = await dbAdmin.from('sheets').delete().eq('id', id)
   if (error) throw error
 }
+
+export async function dbClearSheetPlayers(id: string): Promise<void> {
+  const sheet = await dbGetSheet(id)
+  if (!sheet) return
+  const cleared: Sheet = {
+    ...sheet,
+    parties: sheet.parties.map(p => ({
+      ...p,
+      slots: p.slots.map(s => ({
+        ...s,
+        buildSlots: (s.buildSlots || []).map(bs => ({ ...bs, player: undefined, applicants: [] })),
+      })),
+    })),
+  }
+  await dbUpdateSheet(id, cleared)
+}

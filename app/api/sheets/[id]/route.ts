@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { dbGetSheet, dbUpdateSheet, dbDeleteSheet, dbSetSheetPublic, DB_READY } from '@/lib/db'
+import { dbGetSheet, dbUpdateSheet, dbDeleteSheet, dbSetSheetPublic, dbClearSheetPlayers, DB_READY } from '@/lib/db'
 import { Sheet } from '@/lib/types'
 
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -25,6 +25,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   const { id } = await params
   const { isPublic } = await req.json() as { isPublic: boolean }
   await dbSetSheetPublic(id, isPublic)
+  if (!isPublic) await dbClearSheetPlayers(id)
   return NextResponse.json({ ok: true })
 }
 

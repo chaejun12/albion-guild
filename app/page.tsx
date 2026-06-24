@@ -60,17 +60,20 @@ export default function Home() {
 
   async function handleToggleShare(id: string, currentIsPublic: boolean) {
     const next = !currentIsPublic
+    setSheets(prev => prev.map(s => s.id === id ? { ...s, isPublic: next } : s))
     if (DB_READY) {
       const res = await fetch(`/api/sheets/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isPublic: next }),
       })
-      if (!res.ok) { alert((await res.json()).error); return }
+      if (!res.ok) {
+        setSheets(prev => prev.map(s => s.id === id ? { ...s, isPublic: currentIsPublic } : s))
+        alert((await res.json()).error)
+      }
     } else {
       setSheetPublic(id, next)
     }
-    fetchSheets()
   }
 
   return (

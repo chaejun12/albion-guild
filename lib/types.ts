@@ -32,6 +32,7 @@ export interface BuildSlot {
   id: string
   build: Build
   player?: Player
+  applicants?: Player[]
 }
 
 export interface RoleSlot {
