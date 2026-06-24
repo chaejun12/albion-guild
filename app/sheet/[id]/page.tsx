@@ -698,7 +698,7 @@ function RoleManageModal({ sheet, onConfirm, onUnconfirm, onClose }: {
         <div className="flex flex-1 min-h-0">
 
           {/* ── 왼쪽: 전체 신청 인원 + 미확정 인원 ── */}
-          <div className="w-80 flex-shrink-0 overflow-y-auto p-5 space-y-6 border-r" style={{ borderColor: '#2A3448' }}>
+          <div className="flex-1 min-w-0 overflow-y-auto p-5 space-y-6 border-r" style={{ borderColor: '#2A3448' }}>
             {allApplications.length > 0 && (() => {
               const uniqueApplicants = [...new Map(
                 allApplications.map(({ player }) => [player.discordId ?? player.id, player])
@@ -755,7 +755,7 @@ function RoleManageModal({ sheet, onConfirm, onUnconfirm, onClose }: {
           </div>
 
           {/* ── 가운데: 신청된 역할 (파티별 그룹) ── */}
-          <div className="w-[500px] flex-shrink-0 overflow-y-auto p-5 space-y-6 border-r" style={{ borderColor: '#2A3448' }}>
+          <div className="flex-1 min-w-0 overflow-y-auto p-5 space-y-6 border-r" style={{ borderColor: '#2A3448' }}>
             <h4 className="text-xs font-bold text-green-400 uppercase tracking-wide">신청된 역할</h4>
             {partiesWithEntries.length === 0 && (
               <p className="text-center text-gray-500 py-10">등록된 슬롯이 없습니다</p>
@@ -824,7 +824,7 @@ function RoleManageModal({ sheet, onConfirm, onUnconfirm, onClose }: {
           </div>
 
           {/* ── 오른쪽: 확정된 역할 ── */}
-          <div className="flex-1 min-w-0 overflow-y-auto p-5 pl-[60px]">
+          <div className="flex-1 min-w-0 overflow-y-auto p-5">
             <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wide mb-3">확정된 역할 ({confirmedEntries.length})</h4>
             <div className="space-y-1.5">
               {confirmedEntries.map(({ partyId, slotId, role, bs }) => {
