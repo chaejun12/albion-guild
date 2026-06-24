@@ -567,7 +567,7 @@ function BuildRow({ bs, idx, canEdit, canApply, myDiscordId, applicationClosed, 
               applicants.length === 0 && <span className="text-xs text-gray-700">— 비어있음</span>
             ) : (
               canApply
-                ? <button onClick={onSignup} className="text-xs text-gray-500 hover:text-yellow-400 transition-colors">+ 신청</button>
+                ? <button onClick={onSignup} className="text-xs font-bold px-3 py-1 rounded-full transition-all hover:brightness-110 active:scale-95 flex-shrink-0" style={{ background: '#C8A84B', color: '#0F1419' }}>+ 신청</button>
                 : applicants.length === 0 && <span className="text-xs text-gray-700">— 비어있음</span>
             )}
           </div>
