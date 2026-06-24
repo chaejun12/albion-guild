@@ -9,6 +9,7 @@ declare module 'next-auth' {
       image?: string | null
       isAdmin: boolean
       isGuildMember: boolean
+      guildNickname?: string | null
     }
   }
 }
@@ -17,5 +18,6 @@ declare module 'next-auth/jwt' {
   interface JWT {
     isAdmin?: boolean
     isGuildMember?: boolean
+    guildNickname?: string | null
   }
 }

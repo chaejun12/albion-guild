@@ -18,21 +18,37 @@ async function checkGuildMember(accessToken: string): Promise<boolean> {
   } catch { return false }
 }
 
+async function getGuildNickname(accessToken: string): Promise<string | null> {
+  if (!GUILD_ID || !accessToken) return null
+  try {
+    const res = await fetch(`https://discord.com/api/v10/users/@me/guilds/${GUILD_ID}/member`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    })
+    if (!res.ok) return null
+    const member = (await res.json()) as { nick?: string | null }
+    return member.nick ?? null
+  } catch { return null }
+}
+
 export const authOptions: NextAuthOptions = {
   providers: [
     DiscordProvider({
       clientId: process.env.DISCORD_CLIENT_ID!,
       clientSecret: process.env.DISCORD_CLIENT_SECRET!,
-      authorization: { params: { scope: 'identify guilds' } },
+      authorization: { params: { scope: 'identify guilds guilds.members.read' } },
     }),
   ],
   session: { maxAge: 60 * 60 * 24 },  // 24시간 (길드 탈퇴 반영 주기)
   callbacks: {
     async jwt({ token, account }) {
       if (account?.access_token) {
-        const isGuildMember = await checkGuildMember(account.access_token)
+        const [isGuildMember, guildNickname] = await Promise.all([
+          checkGuildMember(account.access_token),
+          getGuildNickname(account.access_token),
+        ])
         token.isGuildMember = isGuildMember
         token.isAdmin = ADMIN_IDS.includes(token.sub ?? '')
+        token.guildNickname = guildNickname
       }
       return token
     },
@@ -40,6 +56,7 @@ export const authOptions: NextAuthOptions = {
       session.user.id = token.sub ?? ''
       session.user.isAdmin = (token.isAdmin as boolean) ?? false
       session.user.isGuildMember = (token.isGuildMember as boolean) ?? false
+      session.user.guildNickname = (token.guildNickname as string | null) ?? null
       return session
     },
   },

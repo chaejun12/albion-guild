@@ -361,7 +361,7 @@ export default function SheetPage({ params }: { params: Promise<{ id: string }> 
                             onEditBuild={() => setBuildEditing({ partyId: party.id, slotId: roleSlot.id, buildSlotId: bs.id })}
                             onCopy={() => copyBuildSlot(party.id, roleSlot.id, bs.id)}
                             onDelete={() => deleteBuildSlot(party.id, roleSlot.id, bs.id)}
-                            onSignup={() => { setPlayerInput({ nickname: session?.user?.name ?? '', ip: '' }); setPlayerModal({ partyId: party.id, slotId: roleSlot.id, buildSlotId: bs.id }) }}
+                            onSignup={() => { setPlayerInput({ nickname: session?.user?.guildNickname ?? session?.user?.name ?? '', ip: '' }); setPlayerModal({ partyId: party.id, slotId: roleSlot.id, buildSlotId: bs.id }) }}
                             onCancelApply={() => cancelApplication(party.id, roleSlot.id, bs.id)}
                             onRemoveConfirmed={() => removeConfirmed(party.id, roleSlot.id, bs.id)}
                           />
