@@ -27,8 +27,8 @@ function rowToSheet(row: Record<string, unknown>): Sheet {
 }
 
 export async function dbGetSheets(): Promise<Sheet[]> {
-  if (!db) return []
-  const { data, error } = await db
+  if (!dbAdmin) return []
+  const { data, error } = await dbAdmin
     .from('sheets')
     .select('id, name, description, is_public, parties, created_at, updated_at')
     .order('created_at', { ascending: false })
@@ -57,8 +57,8 @@ export async function dbSetSheetPublic(id: string, isPublic: boolean): Promise<v
 }
 
 export async function dbGetSheet(id: string): Promise<Sheet | null> {
-  if (!db) return null
-  const { data, error } = await db
+  if (!dbAdmin) return null
+  const { data, error } = await dbAdmin
     .from('sheets')
     .select('*')
     .eq('id', id)
