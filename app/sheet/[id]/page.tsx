@@ -558,7 +558,7 @@ function BuildRow({ bs, idx, canEdit, canApply, myDiscordId, applicationClosed, 
           <div className="flex items-center gap-2">
             {applicants.length > 0 && (
               <span className="text-xs text-yellow-500 truncate">
-                {applicants[0].nickname}{applicants.length > 1 ? ` 외 ${applicants.length - 1}명` : ''}
+                {applicants.map(a => a.nickname).join(', ')}
               </span>
             )}
             {isApplied ? (

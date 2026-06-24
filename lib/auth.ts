@@ -18,17 +18,37 @@ async function checkGuildMember(accessToken: string): Promise<boolean> {
   } catch { return false }
 }
 
-async function getGuildNickname(userId: string): Promise<string | null> {
+async function getGuildNickname(userId: string, userAccessToken: string): Promise<string | null> {
+  if (!GUILD_ID) return null
+
+  // 1순위: 봇 토큰으로 조회
   const botToken = process.env.DISCORD_BOT_TOKEN
-  if (!GUILD_ID || !botToken || !userId) return null
-  try {
-    const res = await fetch(`https://discord.com/api/v10/guilds/${GUILD_ID}/members/${userId}`, {
-      headers: { Authorization: `Bot ${botToken}` },
-    })
-    if (!res.ok) return null
-    const member = (await res.json()) as { nick?: string | null }
-    return member.nick ?? null
-  } catch { return null }
+  if (botToken && userId) {
+    try {
+      const res = await fetch(`https://discord.com/api/v10/guilds/${GUILD_ID}/members/${userId}`, {
+        headers: { Authorization: `Bot ${botToken}` },
+      })
+      if (res.ok) {
+        const member = (await res.json()) as { nick?: string | null }
+        if (member.nick) return member.nick
+      }
+    } catch {}
+  }
+
+  // 2순위: 유저 access token으로 조회 (guilds.members.read 스코프)
+  if (userAccessToken) {
+    try {
+      const res = await fetch(`https://discord.com/api/v10/users/@me/guilds/${GUILD_ID}/member`, {
+        headers: { Authorization: `Bearer ${userAccessToken}` },
+      })
+      if (res.ok) {
+        const member = (await res.json()) as { nick?: string | null }
+        return member.nick ?? null
+      }
+    } catch {}
+  }
+
+  return null
 }
 
 export const authOptions: NextAuthOptions = {
@@ -36,16 +56,16 @@ export const authOptions: NextAuthOptions = {
     DiscordProvider({
       clientId: process.env.DISCORD_CLIENT_ID!,
       clientSecret: process.env.DISCORD_CLIENT_SECRET!,
-      authorization: { params: { scope: 'identify guilds' } },
+      authorization: { params: { scope: 'identify guilds guilds.members.read' } },
     }),
   ],
-  session: { maxAge: 60 * 60 * 24 },  // 24시간 (길드 탈퇴 반영 주기)
+  session: { maxAge: 60 * 60 * 24 },
   callbacks: {
     async jwt({ token, account }) {
       if (account?.access_token) {
         const [isGuildMember, guildNickname] = await Promise.all([
           checkGuildMember(account.access_token),
-          getGuildNickname(token.sub ?? ''),
+          getGuildNickname(token.sub ?? '', account.access_token),
         ])
         token.isGuildMember = isGuildMember
         token.isAdmin = ADMIN_IDS.includes(token.sub ?? '')
