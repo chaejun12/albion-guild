@@ -248,11 +248,15 @@ export default function SheetPage({ params }: { params: Promise<{ id: string }> 
 
   function confirmApplicant(partyId: string, slotId: string, bsId: string, applicant: Player) {
     if (!sheet) return
-    persist({ ...sheet, parties: sheet.parties.map(p => p.id === partyId ? {
-      ...p, slots: p.slots.map(s => s.id === slotId ? {
-        ...s, buildSlots: s.buildSlots.map(b => b.id === bsId ? { ...b, player: applicant } : b)
-      } : s)
-    } : p) })
+    const applicantKey = applicant.discordId ?? applicant.id
+    persist({ ...sheet, parties: sheet.parties.map(p => ({
+      ...p, slots: p.slots.map(s => ({
+        ...s, buildSlots: s.buildSlots.map(b => {
+          if (b.id === bsId) return { ...b, player: applicant }
+          return { ...b, applicants: (b.applicants || []).filter(a => (a.discordId ?? a.id) !== applicantKey) }
+        })
+      }))
+    })) })
   }
 
   function removeConfirmed(partyId: string, slotId: string, bsId: string) {
@@ -553,7 +557,9 @@ function BuildRow({ bs, idx, canEdit, canApply, myDiscordId, applicationClosed, 
         ) : (
           <div className="flex items-center gap-2">
             {applicants.length > 0 && (
-              <span className="text-xs text-yellow-500">{applicants.length}명 신청</span>
+              <span className="text-xs text-yellow-500 truncate">
+                {applicants[0].nickname}{applicants.length > 1 ? ` 외 ${applicants.length - 1}명` : ''}
+              </span>
             )}
             {isApplied ? (
               <button onClick={onCancelApply} className="text-xs text-red-400 hover:text-red-300 transition-colors">신청 취소</button>
