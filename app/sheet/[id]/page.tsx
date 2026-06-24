@@ -249,11 +249,20 @@ export default function SheetPage({ params }: { params: Promise<{ id: string }> 
   function confirmApplicant(partyId: string, slotId: string, bsId: string, applicant: Player) {
     if (!sheet) return
     const applicantKey = applicant.discordId ?? applicant.id
+    // 이 인원이 신청한 다른 슬롯 목록 수집
+    const removed: { bsId: string; player: Player }[] = []
+    sheet.parties.forEach(p => p.slots.forEach(s => s.buildSlots.forEach(b => {
+      if (b.id === bsId) return
+      const found = (b.applicants || []).find(a => (a.discordId ?? a.id) === applicantKey)
+      if (found) removed.push({ bsId: b.id, player: found })
+    })))
     persist({ ...sheet, parties: sheet.parties.map(p => ({
       ...p, slots: p.slots.map(s => ({
         ...s, buildSlots: s.buildSlots.map(b => {
-          if (b.id === bsId) return { ...b, player: applicant }
-          return { ...b, applicants: (b.applicants || []).filter(a => (a.discordId ?? a.id) !== applicantKey) }
+          if (b.id === bsId) return { ...b, player: applicant, removedApplications: removed }
+          if (removed.some(r => r.bsId === b.id))
+            return { ...b, applicants: (b.applicants || []).filter(a => (a.discordId ?? a.id) !== applicantKey) }
+          return b
         })
       }))
     })) })
@@ -261,11 +270,18 @@ export default function SheetPage({ params }: { params: Promise<{ id: string }> 
 
   function removeConfirmed(partyId: string, slotId: string, bsId: string) {
     if (!sheet) return
-    persist({ ...sheet, parties: sheet.parties.map(p => p.id === partyId ? {
-      ...p, slots: p.slots.map(s => s.id === slotId ? {
-        ...s, buildSlots: s.buildSlots.map(b => b.id === bsId ? { ...b, player: undefined } : b)
-      } : s)
-    } : p) })
+    const slot = sheet.parties.flatMap(p => p.slots.flatMap(s => s.buildSlots)).find(b => b.id === bsId)
+    const removed = slot?.removedApplications ?? []
+    persist({ ...sheet, parties: sheet.parties.map(p => ({
+      ...p, slots: p.slots.map(s => ({
+        ...s, buildSlots: s.buildSlots.map(b => {
+          if (b.id === bsId) return { ...b, player: undefined, removedApplications: undefined }
+          const restore = removed.find(r => r.bsId === b.id)
+          if (restore) return { ...b, applicants: [...(b.applicants || []), restore.player] }
+          return b
+        })
+      }))
+    })) })
   }
 
   // ── 통계

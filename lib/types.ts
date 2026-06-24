@@ -33,6 +33,7 @@ export interface BuildSlot {
   build: Build
   player?: Player
   applicants?: Player[]
+  removedApplications?: { bsId: string; player: Player }[]
 }
 
 export interface RoleSlot {
