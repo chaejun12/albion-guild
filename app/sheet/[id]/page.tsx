@@ -703,23 +703,12 @@ function RoleManageModal({ sheet, onConfirm, onUnconfirm, onClose }: {
             {allApplications.length > 0 && (
               <section>
                 <h4 className="text-xs font-bold text-blue-400 uppercase tracking-wide mb-3">전체 신청 인원 ({allApplications.length}건)</h4>
-                <div className="space-y-1.5">
-                  {allApplications.map(({ player, entry }, i) => {
-                    const preset = ROLE_PRESETS[entry.role] ?? { label: entry.role, color: '#666' }
-                    const isConfirmed = entry.bs.player?.discordId === player.discordId
-                    return (
-                      <div key={i} className="flex items-center gap-2 px-3 py-2 rounded" style={{ background: '#111827' }}>
-                        <span className="text-sm text-gray-200 font-medium w-24 flex-shrink-0 truncate">{player.nickname}</span>
-                        {player.currentIP && <span className="text-xs text-gray-500 flex-shrink-0">{player.currentIP}IP</span>}
-                        <span className="text-gray-600 text-xs flex-shrink-0 mx-1">→</span>
-                        <span className="text-xs px-1.5 py-0.5 rounded flex-shrink-0 font-bold" style={{ background: `${preset.color}22`, color: preset.color }}>{preset.label}</span>
-                        <span className="text-xs text-gray-600 flex-shrink-0">{entry.partyName}·{entry.idx + 1}번</span>
-                        <div className="flex-1 min-w-0" />
-                        <MiniIcons build={entry.bs.build} />
-                        {isConfirmed && <span className="text-xs text-green-400 font-bold ml-1 flex-shrink-0">✓</span>}
-                      </div>
-                    )
-                  })}
+                <div className="flex flex-wrap gap-2">
+                  {allApplications.map(({ player }, i) => (
+                    <span key={i} className="text-sm px-3 py-1 rounded-full" style={{ background: '#111827', color: '#D1D5DB' }}>
+                      {player.nickname}
+                    </span>
+                  ))}
                 </div>
               </section>
             )}
