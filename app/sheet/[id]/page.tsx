@@ -824,7 +824,7 @@ function RoleManageModal({ sheet, onConfirm, onUnconfirm, onClose }: {
           </div>
 
           {/* ── 오른쪽: 확정된 역할 ── */}
-          <div className="flex-1 min-w-0 overflow-y-auto p-5">
+          <div className="flex-1 min-w-0 overflow-y-auto p-5 pl-[60px]">
             <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wide mb-3">확정된 역할 ({confirmedEntries.length})</h4>
             <div className="space-y-1.5">
               {confirmedEntries.map(({ partyId, slotId, role, bs }) => {
