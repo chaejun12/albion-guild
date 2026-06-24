@@ -697,6 +697,7 @@ function RoleManageModal({ sheet, onConfirm, onUnconfirm, onClose }: {
   onClose: () => void
 }) {
   const [slotPick, setSlotPick] = useState<Record<string, string>>({})
+  const [confirmedPartyFilter, setConfirmedPartyFilter] = useState<string>('all')
 
   const entries: BsEntry[] = sheet.parties.flatMap(p =>
     p.slots.flatMap(s =>
@@ -877,28 +878,63 @@ function RoleManageModal({ sheet, onConfirm, onUnconfirm, onClose }: {
           </div>
 
           {/* ── 오른쪽: 확정된 역할 ── */}
-          <div className="flex-1 min-w-0 overflow-y-auto p-5">
-            <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wide mb-3">확정된 역할 ({confirmedEntries.length})</h4>
-            <div className="space-y-1.5">
-              {confirmedEntries.map(({ partyId, slotId, role, bs }) => {
-                const preset = ROLE_PRESETS[role] ?? { label: role, color: '#666' }
-                return (
-                  <div key={bs.id} className="flex items-center gap-3 px-3 py-2 rounded" style={{ background: '#111827', border: `1px solid ${preset.color}44` }}>
-                    <span className="text-xs font-bold flex-shrink-0 w-14 text-center px-1 py-0.5 rounded" style={{ background: `${preset.color}22`, color: preset.color }}>{preset.label}</span>
-                    <span className="text-sm text-gray-200 font-medium flex-shrink-0 w-28 truncate">{bs.player!.nickname}</span>
-                    <div className="flex-1 min-w-0">
-                      <MiniIcons build={bs.build} />
-                    </div>
-                    <button onClick={() => onUnconfirm(partyId, slotId, bs.id)}
-                      className="text-xs text-red-500 hover:text-red-400 px-2 py-0.5 rounded flex-shrink-0 transition-colors"
-                      style={{ background: '#2A1A1A' }}>
-                      확정 취소
+          <div className="flex-1 min-w-0 flex flex-col p-5 gap-3">
+            <div className="flex items-center justify-between flex-shrink-0">
+              <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wide">확정된 역할 ({confirmedEntries.length})</h4>
+            </div>
+            {/* 파티 탭 */}
+            {sheet.parties.length > 1 && (
+              <div className="flex flex-wrap gap-1.5 flex-shrink-0">
+                <button
+                  onClick={() => setConfirmedPartyFilter('all')}
+                  className="text-xs px-3 py-1 rounded-full font-medium transition-colors"
+                  style={confirmedPartyFilter === 'all'
+                    ? { background: '#C8A84B', color: '#0F1419' }
+                    : { background: '#253045', color: '#9CA3AF' }}>
+                  전체 ({confirmedEntries.length})
+                </button>
+                {sheet.parties.map(party => {
+                  const count = confirmedEntries.filter(e => e.partyId === party.id).length
+                  return (
+                    <button
+                      key={party.id}
+                      onClick={() => setConfirmedPartyFilter(party.id)}
+                      className="text-xs px-3 py-1 rounded-full font-medium transition-colors"
+                      style={confirmedPartyFilter === party.id
+                        ? { background: '#C8A84B', color: '#0F1419' }
+                        : { background: '#253045', color: '#9CA3AF' }}>
+                      {party.name} ({count})
                     </button>
-                  </div>
-                )
-              })}
+                  )
+                })}
+              </div>
+            )}
+            {/* 확정 목록 */}
+            <div className="space-y-1.5 overflow-y-auto flex-1 min-h-0">
+              {confirmedEntries
+                .filter(e => confirmedPartyFilter === 'all' || e.partyId === confirmedPartyFilter)
+                .map(({ partyId, slotId, role, bs }) => {
+                  const preset = ROLE_PRESETS[role] ?? { label: role, color: '#666' }
+                  return (
+                    <div key={bs.id} className="flex items-center gap-3 px-3 py-2 rounded" style={{ background: '#111827', border: `1px solid ${preset.color}44` }}>
+                      <span className="text-xs font-bold flex-shrink-0 w-14 text-center px-1 py-0.5 rounded" style={{ background: `${preset.color}22`, color: preset.color }}>{preset.label}</span>
+                      <span className="text-sm text-gray-200 font-medium flex-shrink-0 w-28 truncate">{bs.player!.nickname}</span>
+                      <div className="flex-1 min-w-0">
+                        <MiniIcons build={bs.build} />
+                      </div>
+                      <button onClick={() => onUnconfirm(partyId, slotId, bs.id)}
+                        className="text-xs text-red-500 hover:text-red-400 px-2 py-0.5 rounded flex-shrink-0 transition-colors"
+                        style={{ background: '#2A1A1A' }}>
+                        확정 취소
+                      </button>
+                    </div>
+                  )
+                })}
               {confirmedEntries.length === 0 && (
                 <p className="text-xs text-gray-600 text-center py-4">아직 확정된 역할이 없습니다</p>
+              )}
+              {confirmedEntries.length > 0 && confirmedPartyFilter !== 'all' && confirmedEntries.filter(e => e.partyId === confirmedPartyFilter).length === 0 && (
+                <p className="text-xs text-gray-600 text-center py-4">이 파티에 확정된 역할이 없습니다</p>
               )}
             </div>
           </div>
