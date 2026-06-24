@@ -23,6 +23,7 @@ export const WEAPONS = {
     { id: 'T8_2H_FIRESTAFF_HELL',        name: 'Brimstone Staff' },
     { id: 'T8_2H_INFERNOSTAFF_MORGANA',  name: 'Blazing Staff' },
     { id: 'T8_2H_FIRE_RINGPAIR_AVALON',  name: 'Dawnsong' },
+    { id: 'T8_MAIN_FIRESTAFF_CRYSTAL',   name: 'Crystal Fire Staff' },
   ],
 
   // Holy Staff
@@ -34,6 +35,7 @@ export const WEAPONS = {
     { id: 'T8_2H_HOLYSTAFF_HELL',        name: 'Fallen Staff' },
     { id: 'T8_2H_HOLYSTAFF_UNDEAD',      name: 'Redemption Staff' },
     { id: 'T8_MAIN_HOLYSTAFF_AVALON',    name: 'Hallowfall' },
+    { id: 'T8_2H_HOLYSTAFF_CRYSTAL',     name: 'Crystal Great Holy Staff' },
   ],
 
   // Arcane Staff
@@ -45,6 +47,7 @@ export const WEAPONS = {
     { id: 'T8_2H_ARCANESTAFF_HELL',      name: 'Occult Staff' },
     { id: 'T8_2H_ENIGMATICORB_MORGANA',  name: 'Malevolent Locus' },
     { id: 'T8_2H_ARCANE_RINGPAIR_AVALON',name: 'Evensong' },
+    { id: 'T8_2H_ARCANESTAFF_CRYSTAL',   name: 'Crystal Great Arcane Staff' },
   ],
 
   // Frost Staff
@@ -56,6 +59,7 @@ export const WEAPONS = {
     { id: 'T8_2H_ICEGAUNTLETS_HELL',     name: 'Icicle Staff' },
     { id: 'T8_2H_ICECRYSTAL_UNDEAD',     name: 'Permafrost Prism' },
     { id: 'T8_MAIN_FROSTSTAFF_AVALON',   name: 'Chillhowl' },
+    { id: 'T8_2H_FROSTSTAFF_CRYSTAL',    name: 'Crystal Great Frost Staff' },
   ],
 
   // Cursed Staff
@@ -67,6 +71,7 @@ export const WEAPONS = {
     { id: 'T8_2H_SKULLORB_HELL',         name: 'Cursed Skull' },
     { id: 'T8_2H_CURSEDSTAFF_MORGANA',   name: 'Damnation Staff' },
     { id: 'T8_MAIN_CURSEDSTAFF_AVALON',  name: 'Shadowcaller' },
+    { id: 'T8_MAIN_CURSEDSTAFF_CRYSTAL', name: 'Crystal Cursed Staff' },
   ],
 
   // Nature Staff
@@ -78,6 +83,7 @@ export const WEAPONS = {
     { id: 'T8_2H_NATURESTAFF_HELL',      name: 'Blight Staff' },
     { id: 'T8_2H_NATURESTAFF_KEEPER',    name: 'Rampant Staff' },
     { id: 'T8_MAIN_NATURESTAFF_AVALON',  name: 'Ironroot Staff' },
+    { id: 'T8_MAIN_NATURESTAFF_CRYSTAL', name: 'Crystal Nature Staff' },
   ],
 
   // Shapeshifter Staff
@@ -89,6 +95,7 @@ export const WEAPONS = {
     { id: 'T8_2H_SHAPESHIFTER_HELL',     name: 'Hellspawn Staff' },
     { id: 'T8_2H_SHAPESHIFTER_KEEPER',   name: 'Earthrune Staff' },
     { id: 'T8_2H_SHAPESHIFTER_AVALON',   name: 'Lightcaller' },
+    { id: 'T8_2H_SHAPESHIFTER_CRYSTAL',  name: 'Crystal Shapeshifter Staff' },
   ],
 
   // Sword
@@ -100,7 +107,7 @@ export const WEAPONS = {
     { id: 'T8_2H_CLEAVER_HELL',         name: 'Carving Sword' },
     { id: 'T8_2H_DUALSCIMITAR_UNDEAD',  name: 'Galatine Pair' },
     { id: 'T8_2H_CLAYMORE_AVALON',      name: 'Kingmaker' },
-    { id: 'T8_2H_CLAYMORE_BRECILIEN',   name: 'Infinity Blade' },
+    { id: 'T8_MAIN_SWORD_CRYSTAL',      name: 'Crystal Broadsword' },
   ],
 
   // Axe
@@ -112,7 +119,7 @@ export const WEAPONS = {
     { id: 'T8_2H_SCYTHE_HELL',         name: 'Infernal Scythe' },
     { id: 'T8_2H_DUALAXE_KEEPER',      name: 'Bear Paws' },
     { id: 'T8_2H_AXE_AVALON',          name: 'Realmbreaker' },
-    { id: 'T8_2H_AXE_BRECILIEN',       name: 'Crystal Reaper' },
+    { id: 'T8_2H_SCYTHE_CRYSTAL',      name: 'Crystal Scythe' },
   ],
 
   // Mace
@@ -124,7 +131,7 @@ export const WEAPONS = {
     { id: 'T8_MAIN_MACE_HELL',         name: 'Incubus Mace' },
     { id: 'T8_2H_MACE_MORGANA',        name: 'Camlann Mace' },
     { id: 'T8_2H_DUALMACE_AVALON',     name: 'Oathkeepers' },
-    { id: 'T8_MAIN_MACE_BRECILIEN',    name: 'Dreadstorm Monarch' },
+    { id: 'T8_MAIN_MACE_CRYSTAL',      name: 'Crystal Mace' },
   ],
 
   // Hammer
@@ -136,7 +143,7 @@ export const WEAPONS = {
     { id: 'T8_2H_DUALHAMMER_HELL',     name: 'Forge Hammers' },
     { id: 'T8_2H_RAM_KEEPER',          name: 'Grovekeeper' },
     { id: 'T8_2H_HAMMER_AVALON',       name: 'Hand of Justice' },
-    { id: 'T8_2H_HAMMER_BRECILIEN',    name: 'Trubolt Hammer' },
+    { id: 'T8_2H_HAMMER_CRYSTAL',      name: 'Crystal Great Hammer' },
   ],
 
   // Crossbow
@@ -148,7 +155,7 @@ export const WEAPONS = {
     { id: 'T8_2H_DUALCROSSBOW_HELL',   name: 'Boltcasters' },
     { id: 'T8_2H_CROSSBOWLARGE_MORGANA', name: 'Siegebow' },
     { id: 'T8_2H_CROSSBOW_CANNON_AVALON', name: 'Energy Shaper' },
-    { id: 'T8_2H_CROSSBOW_BRECILIEN', name: 'Arclight Blaster' },
+    { id: 'T8_2H_DUALCROSSBOW_CRYSTAL', name: 'Crystal Boltcasters' },
   ],
 
   // Bow
@@ -160,7 +167,7 @@ export const WEAPONS = {
     { id: 'T8_2H_BOW_HELL',          name: 'Wailing Bow' },
     { id: 'T8_2H_BOW_KEEPER',        name: 'Bow of Badon' },
     { id: 'T8_2H_BOW_AVALON',        name: 'Mistpiercer' },
-    { id: 'T8_2H_BOW_BRECILIEN',     name: 'Skystrider Bow' },
+    { id: 'T8_2H_BOW_CRYSTAL',       name: 'Crystal Bow' },
   ],
 
   // Spear
@@ -172,7 +179,7 @@ export const WEAPONS = {
     { id: 'T8_2H_HARPOON_HELL',      name: 'Spirithunter' },
     { id: 'T8_2H_TRIDENT_UNDEAD',    name: 'Trinity Spear' },
     { id: 'T8_MAIN_SPEAR_LANCE_AVALON', name: 'Daybreaker' },
-    { id: 'T8_2H_GLAIVE_BRECILIEN',  name: 'Rift Glaive' },
+    { id: 'T8_2H_GLAIVE_CRYSTAL',    name: 'Crystal Glaive' },
   ],
 
   // Dagger
@@ -184,6 +191,7 @@ export const WEAPONS = {
     { id: 'T8_MAIN_DAGGER_HELL',     name: 'Demonfang' },
     { id: 'T8_2H_DUALSICKLE_UNDEAD', name: 'Deathgivers' },
     { id: 'T8_2H_DAGGER_KATAR_AVALON', name: 'Bridled Fury' },
+    { id: 'T8_2H_DAGGERPAIR_CRYSTAL',  name: 'Crystal Dagger Pair' },
   ],
 
   // Quarterstaff
@@ -195,6 +203,7 @@ export const WEAPONS = {
     { id: 'T8_2H_TWINSCYTHE_HELL',   name: 'Soulscythe' },
     { id: 'T8_2H_ROCKSTAFF_KEEPER',  name: 'Staff of Balance' },
     { id: 'T8_2H_QUARTERSTAFF_AVALON', name: 'Grailseeker' },
+    { id: 'T8_2H_DOUBLEBLADEDSTAFF_CRYSTAL', name: 'Crystal Double Bladed Staff' },
   ],
 
   // War Gloves
@@ -206,7 +215,7 @@ export const WEAPONS = {
     { id: 'T8_2H_KNUCKLES_HELL',     name: 'Hellfire Hands' },
     { id: 'T8_2H_KNUCKLES_MORGANA',  name: 'Ravenstrike Cestus' },
     { id: 'T8_2H_KNUCKLES_AVALON',   name: 'Fists of Avalon' },
-    { id: 'T8_2H_KNUCKLES_BRECILIEN',name: 'Forcepulse Bracer' },
+    { id: 'T8_2H_KNUCKLES_CRYSTAL@2',name: 'Crystal War Gloves' },
   ],
 
   // Off-hand Shield
@@ -216,17 +225,17 @@ export const WEAPONS = {
     { id: 'T8_OFF_SHIELD_HELL',      name: 'Caitiff Shield' },
     { id: 'T8_OFF_SPIKEDSHIELD_MORGANA', name: 'Facebreaker' },
     { id: 'T8_OFF_SHIELD_AVALON',    name: 'Astral Aegis' },
-    { id: 'T8_OFF_SHIELD_KEEPER',    name: 'Unbreakable Ward' },
+    { id: 'T8_OFF_SHIELD_KEEPER_ELDER',   name: "Elder's Unbreakable Ward" },
   ],
 
   // Torch (Off-hand)
   torch: [
-    { id: 'T8_OFF_TORCH',            name: 'Torch' },
     { id: 'T8_OFF_HORN_KEEPER',      name: 'Mistcaller' },
     { id: 'T8_OFF_JESTERCANE_HELL',  name: 'Leering Cane' },
     { id: 'T8_OFF_LAMP_UNDEAD',      name: 'Cryptcandle' },
     { id: 'T8_OFF_TALISMAN_AVALON',  name: 'Sacred Scepter' },
-    { id: 'T8_OFF_TORCH_MORGANA',    name: 'Blueflame Torch' },
+    { id: 'T8_OFF_TORCH_ELDER',          name: "Elder's Torch" },
+    { id: 'T8_OFF_TORCH_MORGANA_ELDER',  name: "Elder's Blueflame Torch" },
   ],
 
   // Tome (Off-hand)
@@ -236,21 +245,13 @@ export const WEAPONS = {
     { id: 'T8_OFF_DEMONSKULL_HELL',  name: 'Muisak' },
     { id: 'T8_OFF_TOTEM_KEEPER',     name: 'Taproot' },
     { id: 'T8_OFF_CENSER_AVALON',    name: 'Celestial Censer' },
-    { id: 'T8_OFF_BOOK_UNDEAD',      name: 'Timelocked Grimoire' },
+    { id: 'T8_OFF_BOOK_UNDEAD_ELDER',    name: "Elder's Timelocked Grimoire" },
   ],
 };
 
 // ─── ARMOR — CHEST ──────────────────────────────────────────────────────────
 
 export const ARMOR_CHEST = {
-  gathering: [
-    { id: 'T8_ARMOR_GATHERER_SET1',  name: 'Reaper Garb' },
-    { id: 'T8_ARMOR_GATHERER_SET2',  name: 'Fisher Garb' },
-    { id: 'T8_ARMOR_GATHERER_SET3',  name: 'Skinner Armor' },
-    { id: 'T8_ARMOR_GATHERER_SET4',  name: 'Miner Armor' },
-    { id: 'T8_ARMOR_GATHERER_SET5',  name: 'Quarrier Armor' },
-    { id: 'T8_ARMOR_GATHERER_SET6',  name: 'Lumberjack Armor' },
-  ],
   cloth: [
     { id: 'T8_ARMOR_CLOTH_SET1',    name: 'Scholar Robe' },
     { id: 'T8_ARMOR_CLOTH_SET2',    name: 'Cleric Robe' },
@@ -289,14 +290,6 @@ export const ARMOR_CHEST = {
 // ─── ARMOR — HEAD ───────────────────────────────────────────────────────────
 
 export const ARMOR_HEAD = {
-  gathering: [
-    { id: 'T8_HEAD_GATHERER_SET1',   name: 'Reaper Hat' },
-    { id: 'T8_HEAD_GATHERER_SET2',   name: 'Fisher Hat' },
-    { id: 'T8_HEAD_GATHERER_SET3',   name: 'Skinner Cap' },
-    { id: 'T8_HEAD_GATHERER_SET4',   name: 'Miner Cap' },
-    { id: 'T8_HEAD_GATHERER_SET5',   name: 'Quarrier Cap' },
-    { id: 'T8_HEAD_GATHERER_SET6',   name: 'Lumberjack Hat' },
-  ],
   cloth: [
     { id: 'T8_HEAD_CLOTH_SET1',    name: 'Scholar Cowl' },
     { id: 'T8_HEAD_CLOTH_SET2',    name: 'Cleric Cowl' },
@@ -335,14 +328,6 @@ export const ARMOR_HEAD = {
 // ─── ARMOR — SHOES ──────────────────────────────────────────────────────────
 
 export const ARMOR_SHOES = {
-  gathering: [
-    { id: 'T8_SHOES_GATHERER_SET1',  name: 'Reaper Workboots' },
-    { id: 'T8_SHOES_GATHERER_SET2',  name: 'Fisher Workboots' },
-    { id: 'T8_SHOES_GATHERER_SET3',  name: 'Skinner Workboots' },
-    { id: 'T8_SHOES_GATHERER_SET4',  name: 'Miner Workboots' },
-    { id: 'T8_SHOES_GATHERER_SET5',  name: 'Quarrier Workboots' },
-    { id: 'T8_SHOES_GATHERER_SET6',  name: 'Lumberjack Workboots' },
-  ],
   cloth: [
     { id: 'T8_SHOES_CLOTH_SET1',    name: 'Scholar Sandals' },
     { id: 'T8_SHOES_CLOTH_SET2',    name: 'Cleric Sandals' },
@@ -400,23 +385,48 @@ export const CAPES = [
 // ─── FOOD ───────────────────────────────────────────────────────────────────
 
 export const FOOD = [
+  // Soup
+  { id: 'T5_MEAL_SOUP',             name: 'Soup' },
   // Omelette (Energy Regen)
-  { id: 'T7_MEAL_OMELETTE',        name: 'Pork Omelette' },
-  { id: 'T7_MEAL_OMELETTE_FISH',   name: 'Fish Omelette' },
-  { id: 'T8_MEAL_OMELETTE',        name: 'Beef Omelette' },
+  { id: 'T7_MEAL_OMELETTE',         name: 'Pork Omelette' },
+  { id: 'T7_MEAL_OMELETTE@1',       name: 'Pork Omelette .1' },
+  { id: 'T7_MEAL_OMELETTE@2',       name: 'Pork Omelette .2' },
+  { id: 'T7_MEAL_OMELETTE@3',       name: 'Pork Omelette .3' },
+  { id: 'T7_MEAL_OMELETTE_FISH',    name: 'Fish Omelette' },
+  { id: 'T7_MEAL_OMELETTE_FISH@1',  name: 'Fish Omelette .1' },
+  { id: 'T7_MEAL_OMELETTE_FISH@2',  name: 'Fish Omelette .2' },
+  { id: 'T7_MEAL_OMELETTE_FISH@3',  name: 'Fish Omelette .3' },
   // Stew (HP Regen)
-  { id: 'T7_MEAL_STEW',            name: 'Pork Stew' },
-  { id: 'T8_MEAL_STEW',            name: 'Beef Stew' },
-  { id: 'T8_MEAL_STEW_AVALON',     name: 'Avalonian Beef Stew' },
-  { id: 'T8_MEAL_STEW_FISH',       name: 'Deadwater Eel Stew' },
+  { id: 'T8_MEAL_STEW',             name: 'Beef Stew' },
+  { id: 'T8_MEAL_STEW@1',           name: 'Beef Stew .1' },
+  { id: 'T8_MEAL_STEW@2',           name: 'Beef Stew .2' },
+  { id: 'T8_MEAL_STEW@3',           name: 'Beef Stew .3' },
+  { id: 'T8_MEAL_STEW_AVALON',      name: 'Avalonian Beef Stew' },
+  { id: 'T8_MEAL_STEW_AVALON@1',    name: 'Avalonian Beef Stew .1' },
+  { id: 'T8_MEAL_STEW_AVALON@2',    name: 'Avalonian Beef Stew .2' },
+  { id: 'T8_MEAL_STEW_AVALON@3',    name: 'Avalonian Beef Stew .3' },
+  { id: 'T8_MEAL_STEW_FISH',        name: 'Deadwater Eel Stew' },
+  { id: 'T8_MEAL_STEW_FISH@1',      name: 'Deadwater Eel Stew .1' },
+  { id: 'T8_MEAL_STEW_FISH@2',      name: 'Deadwater Eel Stew .2' },
+  { id: 'T8_MEAL_STEW_FISH@3',      name: 'Deadwater Eel Stew .3' },
   // Sandwich (Max HP)
-  { id: 'T7_MEAL_SANDWICH',        name: 'Pork Sandwich' },
-  { id: 'T8_MEAL_SANDWICH',        name: 'Beef Sandwich' },
-  { id: 'T8_MEAL_SANDWICH_AVALON', name: 'Avalonian Beef Sandwich' },
-  { id: 'T8_MEAL_SANDWICH_FISH',   name: 'Thunderfall Lurcher Sandwich' },
+  { id: 'T8_MEAL_SANDWICH',         name: 'Beef Sandwich' },
+  { id: 'T8_MEAL_SANDWICH@1',       name: 'Beef Sandwich .1' },
+  { id: 'T8_MEAL_SANDWICH@2',       name: 'Beef Sandwich .2' },
+  { id: 'T8_MEAL_SANDWICH@3',       name: 'Beef Sandwich .3' },
+  { id: 'T8_MEAL_SANDWICH_AVALON',  name: 'Avalonian Beef Sandwich' },
+  { id: 'T8_MEAL_SANDWICH_AVALON@1',name: 'Avalonian Beef Sandwich .1' },
+  { id: 'T8_MEAL_SANDWICH_AVALON@2',name: 'Avalonian Beef Sandwich .2' },
+  { id: 'T8_MEAL_SANDWICH_AVALON@3',name: 'Avalonian Beef Sandwich .3' },
+  { id: 'T8_MEAL_SANDWICH_FISH',    name: 'Thunderfall Lurcher Sandwich' },
+  { id: 'T8_MEAL_SANDWICH_FISH@1',  name: 'Thunderfall Lurcher Sandwich .1' },
+  { id: 'T8_MEAL_SANDWICH_FISH@2',  name: 'Thunderfall Lurcher Sandwich .2' },
+  { id: 'T8_MEAL_SANDWICH_FISH@3',  name: 'Thunderfall Lurcher Sandwich .3' },
   // Roast (Move Speed)
-  { id: 'T7_MEAL_ROAST',           name: 'Roast Pork' },
-  { id: 'T8_MEAL_ROAST',           name: 'Roast Beef' },
+  { id: 'T7_MEAL_ROAST',            name: 'Roast Pork' },
+  { id: 'T7_MEAL_ROAST@1',          name: 'Roast Pork .1' },
+  { id: 'T7_MEAL_ROAST@2',          name: 'Roast Pork .2' },
+  { id: 'T7_MEAL_ROAST@3',          name: 'Roast Pork .3' },
 ];
 
 // ─── POTIONS ────────────────────────────────────────────────────────────────
