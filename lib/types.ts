@@ -1,12 +1,12 @@
-export type RoleType = 'healer' | 'dealer' | 'support' | 'defense' | 'tank' | 'caller'
+export type RoleType = 'healer' | 'dealer' | 'support' | 'defense' | 'offense' | 'caller'
 
 export const ROLE_PRESETS: Record<RoleType, { label: string; color: string }> = {
-  healer:  { label: '힐러',   color: '#38A169' },
-  dealer:  { label: '딜러',   color: '#E53E3E' },
-  support: { label: '서포터', color: '#805AD5' },
-  defense: { label: '디펜스', color: '#3182CE' },
-  tank:    { label: '탱커',   color: '#DD6B20' },
-  caller:  { label: '콜러',   color: '#D69E2E' },
+  healer:  { label: 'Healer',    color: '#38A169' },
+  dealer:  { label: 'Dealer',    color: '#E53E3E' },
+  support: { label: 'Supporter', color: '#805AD5' },
+  defense: { label: 'Defense',   color: '#3182CE' },
+  offense: { label: 'Offense',   color: '#DD6B20' },
+  caller:  { label: 'Caller',    color: '#D69E2E' },
 }
 
 export interface Build {
