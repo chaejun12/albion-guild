@@ -332,7 +332,7 @@ export default function SheetPage({ params }: { params: Promise<{ id: string }> 
   if (!sheet) return (
     <div className="min-h-screen flex items-center justify-center flex-col gap-4" style={{ background: '#0F1419' }}>
       <p className="text-gray-400">{notFound ? '시트를 찾을 수 없습니다.' : '불러오는 중...'}</p>
-      {notFound && <Link href="/" className="text-sm px-4 py-2 rounded" style={{ background: '#253045', color: '#C8A84B' }}>← 목록으로</Link>}
+      {notFound && <Link href="/sheets" className="text-sm px-4 py-2 rounded" style={{ background: '#253045', color: '#C8A84B' }}>← 목록으로</Link>}
     </div>
   )
 
@@ -340,7 +340,7 @@ export default function SheetPage({ params }: { params: Promise<{ id: string }> 
     <div className="min-h-screen flex flex-col" style={{ background: '#0F1419' }}>
       {/* 헤더 */}
       <header className="border-b px-4 py-3 flex items-center gap-3 sticky top-0 z-30" style={{ borderColor: '#2A3448', background: '#141C28' }}>
-        <Link href="/" className="text-gray-400 hover:text-gray-200 text-sm">← 목록</Link>
+        <Link href="/sheets" className="text-gray-400 hover:text-gray-200 text-sm">← 목록</Link>
         <h1 className="font-bold text-gray-100 flex-1 truncate">{sheet.name}</h1>
         {sheet.applicationClosed && (
           <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: '#7F1D1D', color: '#FCA5A5' }}>신청 마감</span>
