@@ -1013,7 +1013,7 @@ function BuildEditorModal({ initial, onSave, onClose }: { initial: Build; onSave
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50" style={{ background: 'rgba(0,0,0,0.8)' }} onClick={onClose}>
-      <div className="rounded-xl border p-5 w-full max-w-lg relative" style={{ background: '#1A2030', borderColor: '#2A3448' }} onClick={e => e.stopPropagation()}>
+      <div className="rounded-xl border p-5 w-full max-w-2xl relative" style={{ background: '#1A2030', borderColor: '#2A3448' }} onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-bold text-gray-100">빌드 설정</h3>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-300 text-xl">×</button>
@@ -1093,17 +1093,17 @@ function ItemPicker({ slotKey, currentId, onSelect, onClear, onClose }: {
         </div>
       </div>
       {cats && (
-        <div className="flex gap-1.5 px-3 py-2 overflow-x-auto border-b" style={{ borderColor: '#2A3448' }}>
+        <div className="flex flex-wrap gap-1.5 px-3 py-2 border-b" style={{ borderColor: '#2A3448' }}>
           {cats.map(c => (
             <button key={c.key} onClick={() => setSelectedCat(c.key)}
-              className="px-3 py-1 rounded-full text-xs font-medium flex-shrink-0 transition-colors"
+              className="px-3 py-1 rounded-full text-xs font-medium transition-colors"
               style={{ background: selectedCat === c.key ? '#C8A84B' : '#253045', color: selectedCat === c.key ? '#0F1419' : '#9CA3AF' }}>
               {c.label}
             </button>
           ))}
         </div>
       )}
-      <div className="grid grid-cols-4 gap-2 p-3 max-h-56 overflow-y-auto">
+      <div className="grid grid-cols-6 gap-2 p-3 max-h-64 overflow-y-auto">
         {items.map((item: { id: string; name: string }) => (
           <button key={item.id} onClick={() => onSelect(item.id)}
             className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-all hover:scale-105 ${currentId === item.id ? 'ring-2 ring-yellow-500' : ''}`}
