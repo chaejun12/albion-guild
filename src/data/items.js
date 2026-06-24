@@ -432,15 +432,66 @@ export const FOOD = [
 // ─── POTIONS ────────────────────────────────────────────────────────────────
 
 export const POTIONS = [
-  { id: 'T7_POTION_REVIVE',         name: 'Major Gigantify Potion' },
-  { id: 'T5_POTION_REVIVE',         name: 'Gigantify Potion' },
-  { id: 'T6_POTION_HEAL',           name: 'Major Healing Potion' },
+  // Cooldown Potion (쿨타임 감소)
+  { id: 'T4_POTION_COOLDOWN',       name: 'Cooldown Potion' },
+  { id: 'T4_POTION_COOLDOWN@1',     name: 'Cooldown Potion .1' },
+  { id: 'T4_POTION_COOLDOWN@2',     name: 'Cooldown Potion .2' },
+  { id: 'T6_POTION_COOLDOWN',       name: 'Major Cooldown Potion' },
+  { id: 'T6_POTION_COOLDOWN@1',     name: 'Major Cooldown Potion .1' },
+  { id: 'T6_POTION_COOLDOWN@2',     name: 'Major Cooldown Potion .2' },
+  { id: 'T6_POTION_COOLDOWN@3',     name: 'Major Cooldown Potion .3' },
+  { id: 'T8_POTION_COOLDOWN',       name: 'Supreme Cooldown Potion' },
+  { id: 'T8_POTION_COOLDOWN@1',     name: 'Supreme Cooldown Potion .1' },
+  { id: 'T8_POTION_COOLDOWN@2',     name: 'Supreme Cooldown Potion .2' },
+  { id: 'T8_POTION_COOLDOWN@3',     name: 'Supreme Cooldown Potion .3' },
+  // Healing Potion (체력 회복)
   { id: 'T4_POTION_HEAL',           name: 'Healing Potion' },
-  { id: 'T6_POTION_ENERGY',         name: 'Major Energy Potion' },
+  { id: 'T6_POTION_HEAL',           name: 'Major Healing Potion' },
+  // Energy Potion (마나 회복)
   { id: 'T4_POTION_ENERGY',         name: 'Energy Potion' },
-  { id: 'T7_POTION_STONESKIN',       name: 'Major Resistance Potion' },
-  { id: 'T5_POTION_STONESKIN',       name: 'Resistance Potion' },
-  { id: 'T8_POTION_COOLDOWN',       name: 'Major Poison Potion' },
+  { id: 'T6_POTION_ENERGY',         name: 'Major Energy Potion' },
+  { id: 'T6_POTION_ENERGY@1',       name: 'Major Energy Potion .1' },
+  { id: 'T6_POTION_ENERGY@2',       name: 'Major Energy Potion .2' },
+  { id: 'T6_POTION_ENERGY@3',       name: 'Major Energy Potion .3' },
+  // Gigantify Potion (거대화)
+  { id: 'T5_POTION_REVIVE',         name: 'Gigantify Potion' },
+  { id: 'T7_POTION_REVIVE',         name: 'Major Gigantify Potion' },
+  { id: 'T7_POTION_REVIVE@1',       name: 'Major Gigantify Potion .1' },
+  { id: 'T7_POTION_REVIVE@2',       name: 'Major Gigantify Potion .2' },
+  { id: 'T7_POTION_REVIVE@3',       name: 'Major Gigantify Potion .3' },
+  // Resistance Potion (저항력)
+  { id: 'T5_POTION_STONESKIN',      name: 'Resistance Potion' },
+  { id: 'T7_POTION_STONESKIN',      name: 'Major Resistance Potion' },
+  { id: 'T7_POTION_STONESKIN@1',    name: 'Major Resistance Potion .1' },
+  { id: 'T7_POTION_STONESKIN@2',    name: 'Major Resistance Potion .2' },
+  { id: 'T7_POTION_STONESKIN@3',    name: 'Major Resistance Potion .3' },
+  // Slow Field Potion (슬로우 장판)
+  { id: 'T7_POTION_SLOWFIELD',      name: 'Slow Field Potion' },
+  { id: 'T7_POTION_SLOWFIELD@1',    name: 'Slow Field Potion .1' },
+  { id: 'T7_POTION_SLOWFIELD@2',    name: 'Slow Field Potion .2' },
+  { id: 'T7_POTION_SLOWFIELD@3',    name: 'Slow Field Potion .3' },
+  // Berserk Potion (광전사)
+  { id: 'T6_POTION_BERSERK',        name: 'Berserk Potion' },
+  { id: 'T6_POTION_BERSERK@1',      name: 'Berserk Potion .1' },
+  { id: 'T6_POTION_BERSERK@2',      name: 'Berserk Potion .2' },
+  { id: 'T6_POTION_BERSERK@3',      name: 'Berserk Potion .3' },
+  // Poison Potion (독)
+  { id: 'T3_POTION_ACID',           name: 'Poison Potion' },
+  { id: 'T5_POTION_ACID',           name: 'Major Poison Potion' },
+  { id: 'T7_POTION_ACID',           name: 'Supreme Poison Potion' },
+  { id: 'T7_POTION_ACID@1',         name: 'Supreme Poison Potion .1' },
+  { id: 'T7_POTION_ACID@2',         name: 'Supreme Poison Potion .2' },
+  { id: 'T7_POTION_ACID@3',         name: 'Supreme Poison Potion .3' },
+  // Poulice (정화)
+  { id: 'T3_POTION_MOB_RESET',      name: 'Poulice' },
+  { id: 'T3_POTION_MOB_RESET@1',    name: 'Poulice .1' },
+  { id: 'T3_POTION_MOB_RESET@2',    name: 'Poulice .2' },
+  { id: 'T3_POTION_MOB_RESET@3',    name: 'Poulice .3' },
+  { id: 'T5_POTION_MOB_RESET',      name: 'Major Poulice' },
+  { id: 'T5_POTION_MOB_RESET@1',    name: 'Major Poulice .1' },
+  { id: 'T5_POTION_MOB_RESET@2',    name: 'Major Poulice .2' },
+  { id: 'T5_POTION_MOB_RESET@3',    name: 'Major Poulice .3' },
+  // Invisibility Potion (투명)
   { id: 'T8_POTION_CLEANSE',        name: 'Invisibility Potion' },
 ];
 
