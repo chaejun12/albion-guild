@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { dbGetSheet, dbUpdateSheet, dbDeleteSheet, dbSetSheetPublic, dbClearSheetPlayers, DB_READY } from '@/lib/db'
+import { dbGetSheet, dbUpdateSheet, dbDeleteSheet, dbSetSheetPublic, dbClearSheetPlayers, dbSetApplicationClosed, DB_READY } from '@/lib/db'
 import { Sheet } from '@/lib/types'
 
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -19,13 +19,18 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.isAdmin) {
-    return NextResponse.json({ error: '관리자만 공유 설정 가능합니다' }, { status: 403 })
+    return NextResponse.json({ error: '관리자만 설정 가능합니다' }, { status: 403 })
   }
   if (!DB_READY) return NextResponse.json({ error: 'DB 미설정' }, { status: 503 })
   const { id } = await params
-  const { isPublic } = await req.json() as { isPublic: boolean }
-  await dbSetSheetPublic(id, isPublic)
-  if (!isPublic) await dbClearSheetPlayers(id)
+  const body = await req.json() as { isPublic?: boolean; applicationClosed?: boolean }
+  if (body.isPublic !== undefined) {
+    await dbSetSheetPublic(id, body.isPublic)
+    if (!body.isPublic) await dbClearSheetPlayers(id)
+  }
+  if (body.applicationClosed !== undefined) {
+    await dbSetApplicationClosed(id, body.applicationClosed)
+  }
   return NextResponse.json({ ok: true })
 }
 

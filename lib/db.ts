@@ -13,16 +13,29 @@ export const dbAdmin = url ? createClient(url, svc) : null
 export const DB_READY = !!url && !!anon
 
 // ── Row 형식 → Sheet 형식 변환
+// parties 컬럼: 구형 = Party[], 신형 = { v:2, applicationClosed:bool, parties:Party[] }
 function rowToSheet(row: Record<string, unknown>): Sheet {
-  const parties = (row.parties ?? []) as Sheet['parties']
+  const raw = row.parties
+  let parties: Sheet['parties']
+  let applicationClosed = false
+
+  if (raw && !Array.isArray(raw) && typeof raw === 'object' && (raw as Record<string, unknown>).v === 2) {
+    const meta = raw as { v: number; applicationClosed?: boolean; parties: Sheet['parties'] }
+    parties = meta.parties ?? []
+    applicationClosed = meta.applicationClosed ?? false
+  } else {
+    parties = (raw ?? []) as Sheet['parties']
+  }
+
   return {
-    id:          row.id as string,
-    name:        row.name as string,
-    description: row.description as string | undefined,
-    isPublic:    row.is_public as boolean,
+    id:                row.id as string,
+    name:              row.name as string,
+    description:       row.description as string | undefined,
+    isPublic:          row.is_public as boolean,
+    applicationClosed,
     parties,
-    createdAt:   row.created_at as string,
-    updatedAt:   row.updated_at as string,
+    createdAt:         row.created_at as string,
+    updatedAt:         row.updated_at as string,
   }
 }
 
@@ -95,11 +108,17 @@ export async function dbUpdateSheet(id: string, sheet: Sheet): Promise<void> {
       name: sheet.name,
       description: sheet.description ?? '',
       is_public: sheet.isPublic,
-      parties: sheet.parties,
+      parties: { v: 2, applicationClosed: sheet.applicationClosed ?? false, parties: sheet.parties },
       updated_at: new Date().toISOString(),
     })
     .eq('id', id)
   if (error) throw error
+}
+
+export async function dbSetApplicationClosed(id: string, closed: boolean): Promise<void> {
+  const sheet = await dbGetSheet(id)
+  if (!sheet) throw new Error('Sheet not found')
+  await dbUpdateSheet(id, { ...sheet, applicationClosed: closed })
 }
 
 export async function dbDeleteSheet(id: string): Promise<void> {

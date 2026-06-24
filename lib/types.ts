@@ -52,6 +52,7 @@ export interface Sheet {
   name: string
   description?: string
   isPublic: boolean
+  applicationClosed?: boolean
   parties: Party[]
   createdAt: string
   updatedAt: string
