@@ -686,7 +686,7 @@ function RoleManageModal({ sheet, onConfirm, onUnconfirm, onClose }: {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50" style={{ background: 'rgba(0,0,0,0.85)' }} onClick={onClose}>
-      <div className="rounded-xl border w-full max-w-7xl max-h-[90vh] flex flex-col mx-4" style={{ background: '#1A2030', borderColor: '#2A3448' }} onClick={e => e.stopPropagation()}>
+      <div className="rounded-xl border w-full max-h-[90vh] flex flex-col mx-4" style={{ maxWidth: '1600px', background: '#1A2030', borderColor: '#2A3448' }} onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between px-5 py-4 border-b flex-shrink-0" style={{ borderColor: '#2A3448' }}>
           <h3 className="font-bold text-gray-100 text-lg">역할 수정</h3>
           <div className="flex items-center gap-3">
@@ -824,17 +824,20 @@ function RoleManageModal({ sheet, onConfirm, onUnconfirm, onClose }: {
           </div>
 
           {/* ── 오른쪽: 확정된 역할 ── */}
-          <div className="w-56 flex-shrink-0 overflow-y-auto p-5">
+          <div className="w-80 flex-shrink-0 overflow-y-auto p-5">
             <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wide mb-3">확정된 역할 ({confirmedEntries.length})</h4>
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               {confirmedEntries.map(({ partyId, slotId, role, bs }) => {
                 const preset = ROLE_PRESETS[role] ?? { label: role, color: '#666' }
                 return (
-                  <div key={bs.id} className="flex items-center gap-2 px-2.5 py-2 rounded" style={{ background: '#111827', border: `1px solid ${preset.color}44` }}>
-                    <span className="text-xs font-bold flex-shrink-0" style={{ color: preset.color }}>{preset.label}</span>
-                    <span className="text-xs text-gray-200 truncate flex-1">{bs.player!.nickname}</span>
-                    <button onClick={() => onUnconfirm(partyId, slotId, bs.id)}
-                      className="text-gray-600 hover:text-red-400 text-sm leading-none flex-shrink-0 transition-colors">×</button>
+                  <div key={bs.id} className="px-3 py-2.5 rounded space-y-1.5" style={{ background: '#111827', border: `1px solid ${preset.color}44` }}>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold flex-shrink-0" style={{ color: preset.color }}>{preset.label}</span>
+                      <span className="text-sm text-gray-200 font-medium truncate flex-1">{bs.player!.nickname}</span>
+                      <button onClick={() => onUnconfirm(partyId, slotId, bs.id)}
+                        className="text-gray-600 hover:text-red-400 text-sm leading-none flex-shrink-0 transition-colors">×</button>
+                    </div>
+                    <MiniIcons build={bs.build} />
                   </div>
                 )
               })}
