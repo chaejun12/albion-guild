@@ -104,6 +104,8 @@ export default function SheetPage({ params }: { params: Promise<{ id: string }> 
   const [buildEditing, setBuildEditing] = useState<{ partyId: string; slotId: string; buildSlotId: string } | null>(null)
   const [playerModal, setPlayerModal] = useState<{ partyId: string; slotId: string; buildSlotId: string } | null>(null)
   const [playerInput, setPlayerInput] = useState({ nickname: '', ip: '' })
+  const [dragBs, setDragBs] = useState<{ partyId: string; slotId: string; bsId: string } | null>(null)
+  const [dragOverSlot, setDragOverSlot] = useState<string | null>(null)
 
   const { data: session } = useSession()
   const perms = usePermissions()
@@ -284,6 +286,34 @@ export default function SheetPage({ params }: { params: Promise<{ id: string }> 
     })) })
   }
 
+  // ── 빌드 슬롯 이동
+  function moveBuildSlot(toPartyId: string, toSlotId: string) {
+    if (!sheet || !dragBs) return
+    const { partyId: fromPartyId, slotId: fromSlotId, bsId: fromBsId } = dragBs
+    if (fromPartyId === toPartyId && fromSlotId === toSlotId) return
+    let bsToMove: BuildSlot | undefined
+    sheet.parties.forEach(p => p.slots.forEach(s => s.buildSlots.forEach(b => {
+      if (b.id === fromBsId) bsToMove = b
+    })))
+    if (!bsToMove) return
+    const moved = bsToMove
+    persist({
+      ...sheet,
+      parties: sheet.parties.map(p => ({
+        ...p,
+        slots: p.slots.map(s => {
+          if (p.id === fromPartyId && s.id === fromSlotId)
+            return { ...s, buildSlots: s.buildSlots.filter(b => b.id !== fromBsId) }
+          if (p.id === toPartyId && s.id === toSlotId)
+            return { ...s, buildSlots: [...s.buildSlots, moved] }
+          return s
+        })
+      }))
+    })
+    setDragBs(null)
+    setDragOverSlot(null)
+  }
+
   // ── 통계
   const allBuildSlots = sheet?.parties.flatMap(p => p.slots.flatMap(s => s.buildSlots || [])).filter(Boolean) ?? []
   const confirmedCount = allBuildSlots.filter(b => b?.player).length
@@ -368,7 +398,16 @@ export default function SheetPage({ params }: { params: Promise<{ id: string }> 
                         </>}
                       </div>
 
-                      <div className="divide-y" style={{ borderColor: '#1F2937' }}>
+                      <div className="divide-y transition-colors"
+                        style={{
+                          borderColor: '#1F2937',
+                          background: dragOverSlot === roleSlot.id ? '#1A2A1A' : undefined,
+                          outline: dragOverSlot === roleSlot.id ? `2px solid ${preset.color}88` : 'none',
+                        }}
+                        onDragOver={perms.canEditSheet ? e => { e.preventDefault(); setDragOverSlot(roleSlot.id) } : undefined}
+                        onDragLeave={perms.canEditSheet ? e => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setDragOverSlot(null) } : undefined}
+                        onDrop={perms.canEditSheet ? e => { e.preventDefault(); moveBuildSlot(party.id, roleSlot.id) } : undefined}
+                      >
                         {(roleSlot.buildSlots || []).map((bs, idx) => (
                           <BuildRow
                             key={bs.id}
@@ -378,6 +417,9 @@ export default function SheetPage({ params }: { params: Promise<{ id: string }> 
                             canApply={perms.canApply}
                             myDiscordId={session?.user?.id}
                             applicationClosed={sheet.applicationClosed}
+                            isDragging={dragBs?.bsId === bs.id}
+                            onDragStart={() => setDragBs({ partyId: party.id, slotId: roleSlot.id, bsId: bs.id })}
+                            onDragEnd={() => { setDragBs(null); setDragOverSlot(null) }}
                             onEditBuild={() => setBuildEditing({ partyId: party.id, slotId: roleSlot.id, buildSlotId: bs.id })}
                             onCopy={() => copyBuildSlot(party.id, roleSlot.id, bs.id)}
                             onDelete={() => deleteBuildSlot(party.id, roleSlot.id, bs.id)}
@@ -387,7 +429,9 @@ export default function SheetPage({ params }: { params: Promise<{ id: string }> 
                           />
                         ))}
                         {(roleSlot.buildSlots||[]).length === 0 && (
-                          <p className="text-center text-xs text-gray-600 py-3">+ 빌드 버튼으로 빌드를 추가하세요</p>
+                          <p className="text-center text-xs py-3" style={{ color: dragOverSlot === roleSlot.id ? preset.color : '#4B5563' }}>
+                            {dragOverSlot === roleSlot.id ? '여기에 놓기' : '+ 빌드 버튼으로 빌드를 추가하세요'}
+                          </p>
                         )}
                       </div>
                     </div>
@@ -518,13 +562,16 @@ export default function SheetPage({ params }: { params: Promise<{ id: string }> 
 
 // ── BuildRow ──────────────────────────────────────────────────────────────────
 
-function BuildRow({ bs, idx, canEdit, canApply, myDiscordId, applicationClosed, onEditBuild, onCopy, onDelete, onSignup, onCancelApply, onRemoveConfirmed }: {
+function BuildRow({ bs, idx, canEdit, canApply, myDiscordId, applicationClosed, isDragging, onDragStart, onDragEnd, onEditBuild, onCopy, onDelete, onSignup, onCancelApply, onRemoveConfirmed }: {
   bs: BuildSlot
   idx: number
   canEdit: boolean
   canApply: boolean
   myDiscordId?: string
   applicationClosed?: boolean
+  isDragging?: boolean
+  onDragStart?: () => void
+  onDragEnd?: () => void
   onEditBuild: () => void
   onCopy: () => void
   onDelete: () => void
@@ -537,7 +584,13 @@ function BuildRow({ bs, idx, canEdit, canApply, myDiscordId, applicationClosed, 
   const isApplied = !!myDiscordId && applicants.some(a => a.discordId === myDiscordId)
 
   return (
-    <div className="flex items-center gap-3 px-3 py-2" style={{ background: '#111827' }}>
+    <div
+      className="flex items-center gap-3 px-3 py-2 transition-opacity"
+      style={{ background: '#111827', opacity: isDragging ? 0.35 : 1, cursor: canEdit ? 'grab' : 'default' }}
+      draggable={canEdit}
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+    >
       <span className="text-xs text-gray-600 w-4 flex-shrink-0">{idx + 1}</span>
 
       {/* 빌드 아이콘 */}
