@@ -61,23 +61,27 @@ function getCatsFor(key: BuildKey) {
   return null
 }
 
+const FREE_ITEM = { id: 'FREE', name: 'Free' }
+
 function getItems(key: BuildKey, cat: string): { id: string; name: string }[] {
   const W = WEAPONS as Record<string, { id: string; name: string }[]>
   const AH = ARMOR_HEAD as Record<string, { id: string; name: string }[]>
   const AC = ARMOR_CHEST as Record<string, { id: string; name: string }[]>
   const AS = ARMOR_SHOES as Record<string, { id: string; name: string }[]>
-  if (key === 'weapon')  return W[cat] || []
-  if (key === 'head')    return AH[cat] || []
-  if (key === 'chest')   return AC[cat] || []
-  if (key === 'shoes')   return AS[cat] || []
-  if (key === 'offhand') return W[cat] || []
-  if (key === 'cape')    return CAPES as { id: string; name: string }[]
-  if (key === 'food')    return FOOD as { id: string; name: string }[]
-  if (key === 'potion')  return POTIONS as { id: string; name: string }[]
-  return []
+  let items: { id: string; name: string }[] = []
+  if (key === 'weapon')  items = W[cat] || []
+  else if (key === 'head')    items = AH[cat] || []
+  else if (key === 'chest')   items = AC[cat] || []
+  else if (key === 'shoes')   items = AS[cat] || []
+  else if (key === 'offhand') items = W[cat] || []
+  else if (key === 'cape')    items = CAPES as { id: string; name: string }[]
+  else if (key === 'food')    items = FOOD as { id: string; name: string }[]
+  else if (key === 'potion')  items = POTIONS as { id: string; name: string }[]
+  return [FREE_ITEM, ...items]
 }
 
 function getItemName(itemId: string): string {
+  if (itemId === 'FREE') return 'Free'
   const all: { id: string; name: string }[] = [
     ...Object.values(WEAPONS as Record<string, { id: string; name: string }[]>).flat(),
     ...Object.values(ARMOR_HEAD as Record<string, { id: string; name: string }[]>).flat(),
@@ -678,10 +682,12 @@ function MiniIcons({ build }: { build: Build }) {
         const itemId = is2HSlot ? build.weapon : build[key]
         return (
           <div key={key} title={label} style={{ opacity: is2HSlot ? 0.3 : 1 }}>
-            {itemId
-              // eslint-disable-next-line @next/next/no-img-element
-              ? <img src={getIconUrl(itemId)} alt={label} width={28} height={28} className="rounded" loading="eager" />
-              : <div className="w-7 h-7 rounded" style={{ background: '#1F2937' }} />
+            {itemId === 'FREE'
+              ? <div className="w-7 h-7 rounded flex items-center justify-center text-[8px] font-bold" style={{ background: '#1a3a1a', color: '#4ade80' }}>FREE</div>
+              : itemId
+                // eslint-disable-next-line @next/next/no-img-element
+                ? <img src={getIconUrl(itemId)} alt={label} width={28} height={28} className="rounded" loading="eager" />
+                : <div className="w-7 h-7 rounded" style={{ background: '#1F2937' }} />
             }
           </div>
         )
@@ -1021,10 +1027,12 @@ function BuildEditorModal({ initial, onSave, onClose }: { initial: Build; onSave
                 className={`flex flex-col items-center gap-1.5 p-2 rounded-lg border-2 transition-all ${is2HOffhand ? 'cursor-not-allowed' : 'hover:border-yellow-500'}`}
                 style={{ borderColor: isActive ? '#C8A84B' : '#2A3448', background: '#111827', opacity: is2HOffhand ? 0.45 : 1 }}
                 title={is2HOffhand ? '양손 무기 — 보조 장비 장착 불가' : label}>
-                {displayId
-                  // eslint-disable-next-line @next/next/no-img-element
-                  ? <img src={getIconUrl(displayId)} alt={label} width={56} height={56} className="rounded" loading="eager" />
-                  : <div className="w-14 h-14 rounded" style={{ background: '#253045' }} />
+                {displayId === 'FREE'
+                  ? <div className="w-14 h-14 rounded flex items-center justify-center text-xl font-bold" style={{ background: '#1a3a1a', color: '#4ade80' }}>FREE</div>
+                  : displayId
+                    // eslint-disable-next-line @next/next/no-img-element
+                    ? <img src={getIconUrl(displayId)} alt={label} width={56} height={56} className="rounded" loading="eager" />
+                    : <div className="w-14 h-14 rounded" style={{ background: '#253045' }} />
                 }
                 <span className="text-xs" style={{ color: is2HOffhand ? '#555' : '#9CA3AF' }}>{label}</span>
                 {displayId && !is2HOffhand && (
@@ -1098,10 +1106,13 @@ function ItemPicker({ slotKey, currentId, onSelect, onClear, onClose }: {
           <button key={item.id} onClick={() => onSelect(item.id)}
             className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-all hover:scale-105 ${currentId === item.id ? 'ring-2 ring-yellow-500' : ''}`}
             style={{ background: currentId === item.id ? '#C8A84B22' : '#192033' }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={getIconUrl(item.id)} alt={item.name} width={52} height={52} className="rounded" loading="lazy" />
+            {item.id === 'FREE'
+              ? <div className="w-13 h-13 rounded flex items-center justify-center text-sm font-bold" style={{ width: 52, height: 52, background: '#1a3a1a', color: '#4ade80' }}>FREE</div>
+              // eslint-disable-next-line @next/next/no-img-element
+              : <img src={getIconUrl(item.id)} alt={item.name} width={52} height={52} className="rounded" loading="lazy" />
+            }
             <span className="text-[10px] text-center text-gray-300 leading-tight">
-              {catLabel ? <><span className="text-gray-500">{catLabel}</span><br /></> : null}
+              {item.id !== 'FREE' && catLabel ? <><span className="text-gray-500">{catLabel}</span><br /></> : null}
               {item.name}
             </span>
           </button>
