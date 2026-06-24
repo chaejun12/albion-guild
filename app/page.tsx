@@ -78,17 +78,18 @@ export default function Home() {
 
   return (
     <div className="min-h-screen" style={{ background: '#0F1419' }}>
-      {/* 헤더 */}
-      <header className="border-b px-6 py-3 flex items-center gap-4" style={{ borderColor: '#2A3448', background: '#141C28' }}>
-        <div className="flex items-center gap-2 flex-1">
-          <div className="w-7 h-7 rounded text-sm flex items-center justify-center font-bold" style={{ background: '#C8A84B', color: '#0F1419' }}>A</div>
-          <span className="font-bold" style={{ color: '#C8A84B' }}>Albion Comp Sheet</span>
+
+      {/* ── 헤더 ── */}
+      <header className="border-b px-6 py-3 flex items-center gap-4" style={{ borderColor: '#2A3448', background: '#0D1117' }}>
+        <div className="flex items-center gap-3 flex-1">
+          <div className="flex items-center justify-center w-8 h-8 rounded font-black text-xs tracking-tight" style={{ background: '#C8A84B', color: '#0F1419' }}>
+            BAN
+          </div>
+          <span className="font-bold tracking-widest text-sm uppercase" style={{ color: '#C8A84B', letterSpacing: '0.15em' }}>BAN</span>
         </div>
 
-        {/* 사용자 정보 */}
         {session ? (
           <div className="flex items-center gap-3">
-            {/* 역할 배지 */}
             <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
               session.user.isAdmin ? 'bg-yellow-900 text-yellow-300' :
               session.user.isGuildMember ? 'bg-blue-900 text-blue-300' :
@@ -110,7 +111,6 @@ export default function Home() {
           </button>
         )}
 
-        {/* 시트 생성 버튼 - 관리자만 */}
         {perms.canCreateSheet && (
           <button onClick={() => setShowCreate(true)}
             className="px-4 py-1.5 rounded text-sm font-semibold"
@@ -120,7 +120,7 @@ export default function Home() {
         )}
       </header>
 
-      {/* 역할 안내 배너 (비로그인 or 게스트) */}
+      {/* 역할 안내 배너 */}
       {!perms.loading && !perms.isGuildMember && !perms.isAdmin && (
         <div className="px-6 py-2 text-sm text-center" style={{ background: '#1A2030', borderBottom: '1px solid #2A3448' }}>
           {!session
@@ -130,15 +130,53 @@ export default function Home() {
         </div>
       )}
 
-      <main className="max-w-5xl mx-auto px-6 py-8">
-        <h2 className="text-xl font-bold mb-6 text-gray-200">시트 목록</h2>
+      {/* ── 히어로 ── */}
+      <div className="relative overflow-hidden" style={{ background: 'linear-gradient(180deg, #0D1117 0%, #111827 60%, #0F1419 100%)' }}>
+        <div className="absolute inset-0 pointer-events-none" style={{
+          backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(200,168,75,0.03) 80px, rgba(200,168,75,0.03) 81px)',
+        }} />
+        <div className="absolute inset-0 pointer-events-none" style={{
+          backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 80px, rgba(200,168,75,0.03) 80px, rgba(200,168,75,0.03) 81px)',
+        }} />
+
+        <div className="relative max-w-5xl mx-auto px-6 py-16 text-center">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl mb-6 font-black text-xl tracking-tight shadow-lg"
+            style={{ background: 'linear-gradient(135deg, #C8A84B 0%, #E5C96A 50%, #A8882B 100%)', color: '#0D1117', boxShadow: '0 0 40px rgba(200,168,75,0.25)' }}>
+            BAN
+          </div>
+
+          <h1 className="text-4xl font-black tracking-widest uppercase mb-2" style={{ color: '#C8A84B', textShadow: '0 0 30px rgba(200,168,75,0.3)', letterSpacing: '0.2em' }}>
+            BAN GUILD
+          </h1>
+          <p className="text-sm tracking-widest uppercase mb-8" style={{ color: '#4A5568', letterSpacing: '0.3em' }}>
+            Albion Online
+          </p>
+
+          <div className="flex items-center justify-center gap-4 mb-8">
+            <div className="h-px flex-1 max-w-24" style={{ background: 'linear-gradient(90deg, transparent, #C8A84B)' }} />
+            <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#C8A84B' }} />
+            <div className="text-xs tracking-widest uppercase" style={{ color: '#C8A84B' }}>COMPOSITION SHEETS</div>
+            <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#C8A84B' }} />
+            <div className="h-px flex-1 max-w-24" style={{ background: 'linear-gradient(90deg, #C8A84B, transparent)' }} />
+          </div>
+        </div>
+      </div>
+
+      {/* ── 시트 목록 ── */}
+      <main className="max-w-5xl mx-auto px-6 pb-12">
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="text-base font-bold text-gray-300 uppercase tracking-widest" style={{ letterSpacing: '0.15em' }}>시트 목록</h2>
+          <span className="text-xs text-gray-600">{sheets.length}개</span>
+        </div>
 
         {loading ? (
           <p className="text-center text-gray-500 py-20">불러오는 중...</p>
         ) : sheets.length === 0 ? (
-          <div className="text-center py-24 text-gray-500">
-            <p className="text-5xl mb-4">📋</p>
-            <p>{perms.canCreateSheet ? '+ 새 시트 버튼으로 생성하세요' : '등록된 시트가 없습니다'}</p>
+          <div className="text-center py-24">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-5 font-black text-xl" style={{ background: '#1A2030', color: '#2A3448' }}>
+              BAN
+            </div>
+            <p className="text-gray-500">{perms.canCreateSheet ? '+ 새 시트 버튼으로 생성하세요' : '등록된 시트가 없습니다'}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -146,31 +184,44 @@ export default function Home() {
               const totalPlayers = (sheet.parties || []).flatMap(p => p.slots?.flatMap(s => (s.buildSlots || []).filter(b => b.player)) ?? []).length
               const totalSlots = (sheet.parties || []).flatMap(p => p.slots?.flatMap(s => s.buildSlots || []) ?? []).length
               return (
-                <div key={sheet.id} className="rounded-lg border p-5 flex flex-col gap-3 hover:border-yellow-600 transition-colors" style={{ background: '#1A2030', borderColor: '#2A3448' }}>
+                <div key={sheet.id} className="rounded-xl border p-5 flex flex-col gap-3 transition-all"
+                  style={{ background: '#141C28', borderColor: '#2A3448' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.borderColor = '#C8A84B44' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.borderColor = '#2A3448' }}>
+                  <div className="h-0.5 -mx-5 -mt-5 mb-1 rounded-t-xl" style={{ background: 'linear-gradient(90deg, #C8A84B44, transparent)' }} />
+
                   <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="font-bold text-gray-100">{sheet.name}</h3>
-                      {sheet.description && <p className="text-sm text-gray-400 mt-1">{sheet.description}</p>}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-bold text-gray-100 truncate">{sheet.name}</h3>
+                      {sheet.description && <p className="text-sm text-gray-500 mt-0.5 truncate">{sheet.description}</p>}
                     </div>
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${sheet.isPublic ? 'bg-green-900 text-green-300' : 'bg-gray-700 text-gray-400'}`}>
+                    <span className={`ml-2 flex-shrink-0 text-xs px-2 py-0.5 rounded-full ${sheet.isPublic ? 'bg-green-900/60 text-green-400' : 'bg-gray-800 text-gray-500'}`}>
                       {sheet.isPublic ? '공개' : '비공개'}
                     </span>
                   </div>
-                  <div className="text-sm text-gray-400">
-                    {(sheet.parties || []).length}개 파티 · {totalPlayers}/{totalSlots}명
+
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-gray-500">{(sheet.parties || []).length}개 파티</span>
+                    <span className="text-gray-700">·</span>
+                    <span className="text-xs font-medium" style={{ color: totalPlayers > 0 ? '#C8A84B' : '#4A5568' }}>
+                      {totalPlayers}/{totalSlots}명 확정
+                    </span>
                   </div>
-                  <div className="flex gap-2 mt-auto pt-2">
-                    <Link href={`/sheet/${sheet.id}`} className="flex-1 text-center py-1.5 rounded text-sm font-medium" style={{ background: '#253045', color: '#C8A84B' }}>
+
+                  <div className="flex gap-2 mt-auto pt-2 border-t" style={{ borderColor: '#1E2A3A' }}>
+                    <Link href={`/sheet/${sheet.id}`}
+                      className="flex-1 text-center py-1.5 rounded text-sm font-semibold transition-colors"
+                      style={{ background: '#1E2A3A', color: '#C8A84B' }}>
                       열기
                     </Link>
                     {perms.isAdmin && (
                       <button onClick={() => handleToggleShare(sheet.id, sheet.isPublic)}
-                        className={`px-3 py-1.5 rounded text-sm font-medium ${sheet.isPublic ? 'text-yellow-400 hover:bg-yellow-900/30' : 'text-green-400 hover:bg-green-900/30'}`}>
+                        className={`px-3 py-1.5 rounded text-sm font-medium ${sheet.isPublic ? 'text-yellow-500 hover:bg-yellow-900/20' : 'text-green-400 hover:bg-green-900/20'}`}>
                         {sheet.isPublic ? '공유 취소' : '공유'}
                       </button>
                     )}
                     {perms.canDeleteSheet && (
-                      <button onClick={() => handleDelete(sheet.id)} className="px-3 py-1.5 rounded text-sm text-red-400 hover:bg-red-900/30">
+                      <button onClick={() => handleDelete(sheet.id)} className="px-3 py-1.5 rounded text-sm text-red-500 hover:bg-red-900/20">
                         삭제
                       </button>
                     )}
@@ -182,10 +233,10 @@ export default function Home() {
         )}
       </main>
 
-      {/* 시트 생성 모달 */}
+      {/* ── 시트 생성 모달 ── */}
       {showCreate && (
-        <div className="fixed inset-0 flex items-center justify-center z-50" style={{ background: 'rgba(0,0,0,0.7)' }}>
-          <form onSubmit={handleCreate} className="rounded-xl border p-6 w-full max-w-md" style={{ background: '#1A2030', borderColor: '#2A3448' }}>
+        <div className="fixed inset-0 flex items-center justify-center z-50" style={{ background: 'rgba(0,0,0,0.75)' }}>
+          <form onSubmit={handleCreate} className="rounded-xl border p-6 w-full max-w-md" style={{ background: '#141C28', borderColor: '#2A3448' }}>
             <h3 className="text-lg font-bold mb-5 text-gray-100">새 시트 생성</h3>
             <div className="space-y-4">
               <div>
