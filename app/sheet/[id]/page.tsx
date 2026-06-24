@@ -665,7 +665,7 @@ function RoleManageModal({ sheet, onConfirm, onUnconfirm, onClose }: {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50" style={{ background: 'rgba(0,0,0,0.85)' }} onClick={onClose}>
-      <div className="rounded-xl border w-full max-w-3xl max-h-[90vh] flex flex-col" style={{ background: '#1A2030', borderColor: '#2A3448' }} onClick={e => e.stopPropagation()}>
+      <div className="rounded-xl border w-full max-w-6xl max-h-[90vh] flex flex-col mx-4" style={{ background: '#1A2030', borderColor: '#2A3448' }} onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between px-5 py-4 border-b flex-shrink-0" style={{ borderColor: '#2A3448' }}>
           <h3 className="font-bold text-gray-100 text-lg">역할 수정</h3>
           <div className="flex items-center gap-3">
@@ -674,169 +674,175 @@ function RoleManageModal({ sheet, onConfirm, onUnconfirm, onClose }: {
           </div>
         </div>
 
-        <div className="overflow-y-auto flex-1 p-5 space-y-6">
+        <div className="flex flex-1 min-h-0">
 
-          {/* ── 전체 신청 인원 ── */}
-          {allApplications.length > 0 && (
-            <section>
-              <h4 className="text-xs font-bold text-blue-400 uppercase tracking-wide mb-3">전체 신청 인원 ({allApplications.length}건)</h4>
-              <div className="space-y-1.5">
-                {allApplications.map(({ player, entry }, i) => {
-                  const preset = ROLE_PRESETS[entry.role] ?? { label: entry.role, color: '#666' }
-                  const isConfirmed = entry.bs.player?.discordId === player.discordId
-                  return (
-                    <div key={i} className="flex items-center gap-2 px-3 py-2 rounded" style={{ background: '#111827' }}>
-                      <span className="text-sm text-gray-200 font-medium w-28 flex-shrink-0 truncate">{player.nickname}</span>
-                      {player.currentIP && <span className="text-xs text-gray-500 flex-shrink-0">{player.currentIP}IP</span>}
-                      <span className="text-gray-600 text-xs flex-shrink-0 mx-1">→</span>
-                      <span className="text-xs px-1.5 py-0.5 rounded flex-shrink-0 font-bold" style={{ background: `${preset.color}22`, color: preset.color }}>{preset.label}</span>
-                      <span className="text-xs text-gray-600 flex-shrink-0">{entry.partyName}·{entry.idx + 1}번</span>
-                      <div className="flex-1 min-w-0" />
-                      <MiniIcons build={entry.bs.build} />
-                      {isConfirmed && <span className="text-xs text-green-400 font-bold ml-1 flex-shrink-0">✓</span>}
-                    </div>
-                  )
-                })}
-              </div>
-            </section>
-          )}
-
-          {/* ── 미확정 인원 ── */}
-          {unconfirmedPeople.length > 0 && (
-            <section>
-              <h4 className="text-xs font-bold text-yellow-400 uppercase tracking-wide mb-3">미확정 인원 ({unconfirmedPeople.length}명)</h4>
-              <div className="space-y-2">
-                {unconfirmedPeople.map(({ player, entries: appliedEntries }) => (
-                  <div key={player.discordId ?? player.id} className="px-3 py-2.5 rounded border" style={{ background: '#111827', borderColor: '#2A3448' }}>
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-sm text-gray-200 font-medium">{player.nickname}</span>
-                      {player.currentIP && <span className="text-xs text-gray-500">{player.currentIP}IP</span>}
-                    </div>
-                    <div className="space-y-1.5 ml-1">
-                      {appliedEntries.map((e, i) => {
-                        const preset = ROLE_PRESETS[e.role] ?? { label: e.role, color: '#666' }
-                        return (
-                          <div key={i} className="flex items-center gap-2">
-                            <span className="text-xs text-gray-600 flex-shrink-0">신청:</span>
-                            <span className="text-xs px-1.5 py-0.5 rounded font-bold flex-shrink-0" style={{ background: `${preset.color}22`, color: preset.color }}>{preset.label}</span>
-                            <span className="text-xs text-gray-600 flex-shrink-0">{e.partyName}·슬롯{e.idx + 1}</span>
-                            <MiniIcons build={e.bs.build} />
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* ── 신청된 역할 (확정/취소) ── */}
-          {withActivity.length > 0 && (
-            <section>
-              <h4 className="text-xs font-bold text-green-400 uppercase tracking-wide mb-3">신청된 역할 ({withActivity.length})</h4>
-              <div className="space-y-3">
-                {withActivity.map(({ partyId, partyName, slotId, role, bs, idx }) => {
-                  const preset = ROLE_PRESETS[role] ?? { label: role, color: '#666' }
-                  const applicants = bs.applicants || []
-                  return (
-                    <div key={bs.id} className="rounded-lg border p-3 space-y-2" style={{ background: '#111827', borderColor: '#2A3448' }}>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-xs font-bold px-2 py-0.5 rounded" style={{ background: `${preset.color}22`, color: preset.color }}>{preset.label}</span>
-                        <span className="text-xs text-gray-500">{partyName} · 슬롯 {idx + 1}</span>
-                        <MiniIcons build={bs.build} />
+          {/* ── 왼쪽: 전체 신청 인원 + 미확정 인원 ── */}
+          <div className="flex-1 overflow-y-auto p-5 space-y-6 border-r" style={{ borderColor: '#2A3448' }}>
+            {allApplications.length > 0 && (
+              <section>
+                <h4 className="text-xs font-bold text-blue-400 uppercase tracking-wide mb-3">전체 신청 인원 ({allApplications.length}건)</h4>
+                <div className="space-y-1.5">
+                  {allApplications.map(({ player, entry }, i) => {
+                    const preset = ROLE_PRESETS[entry.role] ?? { label: entry.role, color: '#666' }
+                    const isConfirmed = entry.bs.player?.discordId === player.discordId
+                    return (
+                      <div key={i} className="flex items-center gap-2 px-3 py-2 rounded" style={{ background: '#111827' }}>
+                        <span className="text-sm text-gray-200 font-medium w-24 flex-shrink-0 truncate">{player.nickname}</span>
+                        {player.currentIP && <span className="text-xs text-gray-500 flex-shrink-0">{player.currentIP}IP</span>}
+                        <span className="text-gray-600 text-xs flex-shrink-0 mx-1">→</span>
+                        <span className="text-xs px-1.5 py-0.5 rounded flex-shrink-0 font-bold" style={{ background: `${preset.color}22`, color: preset.color }}>{preset.label}</span>
+                        <span className="text-xs text-gray-600 flex-shrink-0">{entry.partyName}·{entry.idx + 1}번</span>
+                        <div className="flex-1 min-w-0" />
+                        <MiniIcons build={entry.bs.build} />
+                        {isConfirmed && <span className="text-xs text-green-400 font-bold ml-1 flex-shrink-0">✓</span>}
                       </div>
-                      {bs.player && (
-                        <div className="flex items-center gap-2 px-3 py-2 rounded" style={{ background: '#14532d33', border: '1px solid #166534' }}>
-                          <span className="text-xs text-green-400 font-bold">✓ 확정</span>
-                          <span className="text-sm text-gray-200 font-medium">{bs.player.nickname}</span>
-                          {bs.player.currentIP && <span className="text-xs text-gray-500">{bs.player.currentIP} IP</span>}
-                          <button onClick={() => onUnconfirm(partyId, slotId, bs.id)}
-                            className="ml-auto text-xs text-red-500 hover:text-red-400 px-2 py-0.5 rounded"
-                            style={{ background: '#2A1A1A' }}>
-                            확정 취소
-                          </button>
-                        </div>
-                      )}
-                      {applicants.length > 0 && (
-                        <div className="space-y-1">
-                          {applicants.map(applicant => (
-                            <div key={applicant.id} className="flex items-center gap-2 px-3 py-1.5 rounded" style={{ background: '#192033' }}>
-                              <span className="text-sm text-gray-300">{applicant.nickname}</span>
-                              {applicant.currentIP && <span className="text-xs text-gray-500">{applicant.currentIP} IP</span>}
-                              {!bs.player && (
-                                <button onClick={() => onConfirm(partyId, slotId, bs.id, applicant)}
-                                  className="ml-auto text-xs px-3 py-0.5 rounded font-medium"
-                                  style={{ background: '#C8A84B', color: '#0F1419' }}>
-                                  확정
-                                </button>
-                              )}
+                    )
+                  })}
+                </div>
+              </section>
+            )}
+
+            {unconfirmedPeople.length > 0 && (
+              <section>
+                <h4 className="text-xs font-bold text-yellow-400 uppercase tracking-wide mb-3">미확정 인원 ({unconfirmedPeople.length}명)</h4>
+                <div className="space-y-2">
+                  {unconfirmedPeople.map(({ player, entries: appliedEntries }) => (
+                    <div key={player.discordId ?? player.id} className="px-3 py-2.5 rounded border" style={{ background: '#111827', borderColor: '#2A3448' }}>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-sm text-gray-200 font-medium">{player.nickname}</span>
+                        {player.currentIP && <span className="text-xs text-gray-500">{player.currentIP}IP</span>}
+                      </div>
+                      <div className="space-y-1.5 ml-1">
+                        {appliedEntries.map((e, i) => {
+                          const preset = ROLE_PRESETS[e.role] ?? { label: e.role, color: '#666' }
+                          return (
+                            <div key={i} className="flex items-center gap-2">
+                              <span className="text-xs text-gray-600 flex-shrink-0">신청:</span>
+                              <span className="text-xs px-1.5 py-0.5 rounded font-bold flex-shrink-0" style={{ background: `${preset.color}22`, color: preset.color }}>{preset.label}</span>
+                              <span className="text-xs text-gray-600 flex-shrink-0">{e.partyName}·슬롯{e.idx + 1}</span>
+                              <MiniIcons build={e.bs.build} />
                             </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
-            </section>
-          )}
-
-          {/* ── 미신청 역할 (미확정 인원 선택) ── */}
-          {withoutActivity.length > 0 && (
-            <section>
-              <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-3">미신청 역할 ({withoutActivity.length})</h4>
-              <div className="space-y-2">
-                {withoutActivity.map((entry) => {
-                  const { partyId, partyName, slotId, role, bs, idx } = entry
-                  const preset = ROLE_PRESETS[role] ?? { label: role, color: '#666' }
-                  const selected = slotPick[bs.id] ?? ''
-                  return (
-                    <div key={bs.id} className="rounded-lg border p-3" style={{ background: '#0F1419', borderColor: '#1F2937' }}>
-                      <div className="flex items-center gap-2 flex-wrap mb-2">
-                        <span className="text-xs font-bold px-2 py-0.5 rounded flex-shrink-0" style={{ background: `${preset.color}22`, color: preset.color }}>{preset.label}</span>
-                        <span className="text-xs text-gray-600">{partyName} · 슬롯 {idx + 1}</span>
-                        <MiniIcons build={bs.build} />
+                          )
+                        })}
                       </div>
-                      {unconfirmedPeople.length > 0 ? (
-                        <div className="flex items-center gap-2">
-                          <select
-                            value={selected}
-                            onChange={e => setSlotPick(prev => ({ ...prev, [bs.id]: e.target.value }))}
-                            className="flex-1 px-2 py-1.5 rounded text-sm text-gray-200 outline-none"
-                            style={{ background: '#192033', border: '1px solid #2A3448' }}>
-                            <option value="">미확정 인원 선택...</option>
-                            {unconfirmedPeople.map(({ player }) => (
-                              <option key={player.discordId ?? player.id} value={player.discordId ?? player.id}>
-                                {player.nickname}{player.currentIP ? ` (${player.currentIP}IP)` : ''}
-                              </option>
-                            ))}
-                          </select>
-                          {selected && (
-                            <button
-                              onClick={() => handlePickAndConfirm(entry, selected)}
-                              className="px-3 py-1.5 rounded text-sm font-medium flex-shrink-0"
-                              style={{ background: '#C8A84B', color: '#0F1419' }}>
-                              확정
-                            </button>
-                          )}
-                        </div>
-                      ) : (
-                        <p className="text-xs text-gray-600">신청 가능한 미확정 인원이 없습니다</p>
-                      )}
                     </div>
-                  )
-                })}
-              </div>
-            </section>
-          )}
+                  ))}
+                </div>
+              </section>
+            )}
 
-          {entries.length === 0 && (
-            <p className="text-center text-gray-500 py-10">등록된 슬롯이 없습니다</p>
-          )}
-          {entries.length > 0 && allApplications.length === 0 && (
-            <p className="text-center text-gray-500 py-4">아직 신청한 인원이 없습니다</p>
-          )}
+            {entries.length === 0 && (
+              <p className="text-center text-gray-500 py-10">등록된 슬롯이 없습니다</p>
+            )}
+            {entries.length > 0 && allApplications.length === 0 && (
+              <p className="text-center text-gray-500 py-10">아직 신청한 인원이 없습니다</p>
+            )}
+          </div>
+
+          {/* ── 오른쪽: 신청된 역할 + 미신청 역할 ── */}
+          <div className="flex-1 overflow-y-auto p-5 space-y-6">
+            {withActivity.length > 0 && (
+              <section>
+                <h4 className="text-xs font-bold text-green-400 uppercase tracking-wide mb-3">신청된 역할 ({withActivity.length})</h4>
+                <div className="space-y-3">
+                  {withActivity.map(({ partyId, partyName, slotId, role, bs, idx }) => {
+                    const preset = ROLE_PRESETS[role] ?? { label: role, color: '#666' }
+                    const applicants = bs.applicants || []
+                    return (
+                      <div key={bs.id} className="rounded-lg border p-3 space-y-2" style={{ background: '#111827', borderColor: '#2A3448' }}>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-xs font-bold px-2 py-0.5 rounded" style={{ background: `${preset.color}22`, color: preset.color }}>{preset.label}</span>
+                          <span className="text-xs text-gray-500">{partyName} · 슬롯 {idx + 1}</span>
+                          <MiniIcons build={bs.build} />
+                        </div>
+                        {bs.player && (
+                          <div className="flex items-center gap-2 px-3 py-2 rounded" style={{ background: '#14532d33', border: '1px solid #166534' }}>
+                            <span className="text-xs text-green-400 font-bold">✓ 확정</span>
+                            <span className="text-sm text-gray-200 font-medium">{bs.player.nickname}</span>
+                            {bs.player.currentIP && <span className="text-xs text-gray-500">{bs.player.currentIP} IP</span>}
+                            <button onClick={() => onUnconfirm(partyId, slotId, bs.id)}
+                              className="ml-auto text-xs text-red-500 hover:text-red-400 px-2 py-0.5 rounded"
+                              style={{ background: '#2A1A1A' }}>
+                              확정 취소
+                            </button>
+                          </div>
+                        )}
+                        {applicants.length > 0 && (
+                          <div className="space-y-1">
+                            {applicants.map(applicant => (
+                              <div key={applicant.id} className="flex items-center gap-2 px-3 py-1.5 rounded" style={{ background: '#192033' }}>
+                                <span className="text-sm text-gray-300">{applicant.nickname}</span>
+                                {applicant.currentIP && <span className="text-xs text-gray-500">{applicant.currentIP} IP</span>}
+                                {!bs.player && (
+                                  <button onClick={() => onConfirm(partyId, slotId, bs.id, applicant)}
+                                    className="ml-auto text-xs px-3 py-0.5 rounded font-medium"
+                                    style={{ background: '#C8A84B', color: '#0F1419' }}>
+                                    확정
+                                  </button>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              </section>
+            )}
+
+            {withoutActivity.length > 0 && (
+              <section>
+                <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-3">미신청 역할 ({withoutActivity.length})</h4>
+                <div className="space-y-2">
+                  {withoutActivity.map((entry) => {
+                    const { partyId, partyName, slotId, role, bs, idx } = entry
+                    const preset = ROLE_PRESETS[role] ?? { label: role, color: '#666' }
+                    const selected = slotPick[bs.id] ?? ''
+                    return (
+                      <div key={bs.id} className="rounded-lg border p-3" style={{ background: '#0F1419', borderColor: '#1F2937' }}>
+                        <div className="flex items-center gap-2 flex-wrap mb-2">
+                          <span className="text-xs font-bold px-2 py-0.5 rounded flex-shrink-0" style={{ background: `${preset.color}22`, color: preset.color }}>{preset.label}</span>
+                          <span className="text-xs text-gray-600">{partyName} · 슬롯 {idx + 1}</span>
+                          <MiniIcons build={bs.build} />
+                        </div>
+                        {unconfirmedPeople.length > 0 ? (
+                          <div className="flex items-center gap-2">
+                            <select
+                              value={selected}
+                              onChange={e => setSlotPick(prev => ({ ...prev, [bs.id]: e.target.value }))}
+                              className="flex-1 px-2 py-1.5 rounded text-sm text-gray-200 outline-none"
+                              style={{ background: '#192033', border: '1px solid #2A3448' }}>
+                              <option value="">미확정 인원 선택...</option>
+                              {unconfirmedPeople.map(({ player }) => (
+                                <option key={player.discordId ?? player.id} value={player.discordId ?? player.id}>
+                                  {player.nickname}{player.currentIP ? ` (${player.currentIP}IP)` : ''}
+                                </option>
+                              ))}
+                            </select>
+                            {selected && (
+                              <button
+                                onClick={() => handlePickAndConfirm(entry, selected)}
+                                className="px-3 py-1.5 rounded text-sm font-medium flex-shrink-0"
+                                style={{ background: '#C8A84B', color: '#0F1419' }}>
+                                확정
+                              </button>
+                            )}
+                          </div>
+                        ) : (
+                          <p className="text-xs text-gray-600">신청 가능한 미확정 인원이 없습니다</p>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              </section>
+            )}
+
+            {entries.length > 0 && withActivity.length === 0 && withoutActivity.length === 0 && (
+              <p className="text-center text-gray-500 py-10">슬롯이 없습니다</p>
+            )}
+          </div>
         </div>
       </div>
     </div>
