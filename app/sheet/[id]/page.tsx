@@ -1,10 +1,10 @@
 'use client'
-import { useState, useEffect, use, useCallback } from 'react'
+import { useState, useEffect, useRef, use, useCallback } from 'react'
 import Link from 'next/link'
 import { signIn, useSession } from 'next-auth/react'
 import { Sheet, Party, RoleSlot, BuildSlot, Build, Player, RoleType, ROLE_PRESETS } from '@/lib/types'
 import { getSheet, saveSheet, uid } from '@/lib/store'
-import { DB_READY } from '@/lib/db'
+import { db, DB_READY } from '@/lib/db'
 import { usePermissions } from '@/lib/usePermissions'
 import { getIconUrl, isTwoHanded } from '@/lib/icons'
 import { WEAPONS, ARMOR_CHEST, ARMOR_HEAD, ARMOR_SHOES, CAPES, FOOD, POTIONS } from '@/src/data/items'
@@ -113,6 +113,7 @@ export default function SheetPage({ params }: { params: Promise<{ id: string }> 
 
   const { data: session } = useSession()
   const perms = usePermissions()
+  const lastPersistRef = useRef<number>(0)
 
   const loadSheet = useCallback(async () => {
     if (DB_READY) {
@@ -127,8 +128,29 @@ export default function SheetPage({ params }: { params: Promise<{ id: string }> 
 
   useEffect(() => { loadSheet() }, [loadSheet])
 
+  // ── Supabase Realtime 구독 ─────────────────────────────────────────────────
+  useEffect(() => {
+    const supabase = db
+    if (!DB_READY || !supabase) return
+    const channel = supabase
+      .channel(`sheet:${id}`)
+      .on(
+        'postgres_changes' as const,
+        { event: 'UPDATE', schema: 'public', table: 'sheets', filter: `id=eq.${id}` },
+        () => {
+          // 내가 방금 저장한 직후 2초 이내 이벤트는 무시 (자기 자신의 업데이트)
+          if (Date.now() - lastPersistRef.current > 2000) {
+            loadSheet()
+          }
+        }
+      )
+      .subscribe()
+    return () => { supabase.removeChannel(channel) }
+  }, [id, loadSheet])
+
   async function persist(updated: Sheet, applyOnly = false) {
     setSheet({ ...updated })
+    lastPersistRef.current = Date.now()
     if (DB_READY) {
       await fetch(`/api/sheets/${id}`, {
         method: 'PUT',
