@@ -691,7 +691,7 @@ function RoleManageModal({ sheet, onConfirm, onUnconfirm, onClose }: {
         <div className="flex items-center justify-between px-5 py-4 border-b flex-shrink-0" style={{ borderColor: '#2A3448' }}>
           <h3 className="font-bold text-gray-100 text-lg">역할 수정</h3>
           <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-500">신청 {allApplications.length}건 · 미확정 {unconfirmedPeople.length}명</span>
+            <span className="text-sm text-gray-500">신청 {new Set(allApplications.map(({ player }) => player.discordId ?? player.id)).size}명 · 미확정 {unconfirmedPeople.length}명</span>
             <button onClick={onClose} className="text-gray-500 hover:text-gray-300 text-xl">×</button>
           </div>
         </div>
@@ -700,18 +700,23 @@ function RoleManageModal({ sheet, onConfirm, onUnconfirm, onClose }: {
 
           {/* ── 왼쪽: 전체 신청 인원 + 미확정 인원 ── */}
           <div className="flex-1 overflow-y-auto p-5 space-y-6 border-r" style={{ borderColor: '#2A3448' }}>
-            {allApplications.length > 0 && (
-              <section>
-                <h4 className="text-xs font-bold text-blue-400 uppercase tracking-wide mb-3">전체 신청 인원 ({allApplications.length}건)</h4>
-                <div className="flex flex-wrap gap-2">
-                  {allApplications.map(({ player }, i) => (
-                    <span key={i} className="text-sm px-3 py-1 rounded-full" style={{ background: '#111827', color: '#D1D5DB' }}>
-                      {player.nickname}
-                    </span>
-                  ))}
-                </div>
-              </section>
-            )}
+            {allApplications.length > 0 && (() => {
+              const uniqueApplicants = [...new Map(
+                allApplications.map(({ player }) => [player.discordId ?? player.id, player])
+              ).values()]
+              return (
+                <section>
+                  <h4 className="text-xs font-bold text-blue-400 uppercase tracking-wide mb-3">전체 신청 인원 ({uniqueApplicants.length}명)</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {uniqueApplicants.map(player => (
+                      <span key={player.discordId ?? player.id} className="text-sm px-3 py-1 rounded-full" style={{ background: '#111827', color: '#D1D5DB' }}>
+                        {player.nickname}
+                      </span>
+                    ))}
+                  </div>
+                </section>
+              )
+            })()}
 
             {unconfirmedPeople.length > 0 && (
               <section>
