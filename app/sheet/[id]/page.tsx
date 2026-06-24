@@ -686,7 +686,7 @@ function RoleManageModal({ sheet, onConfirm, onUnconfirm, onClose }: {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50" style={{ background: 'rgba(0,0,0,0.85)' }} onClick={onClose}>
-      <div className="rounded-xl border w-full max-h-[90vh] flex flex-col mx-2" style={{ maxWidth: '1600px', background: '#1A2030', borderColor: '#2A3448' }} onClick={e => e.stopPropagation()}>
+      <div className="rounded-xl border w-full max-h-[90vh] flex flex-col mx-1" style={{ maxWidth: '1800px', background: '#1A2030', borderColor: '#2A3448' }} onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between px-5 py-4 border-b flex-shrink-0" style={{ borderColor: '#2A3448' }}>
           <h3 className="font-bold text-gray-100 text-lg">역할 수정</h3>
           <div className="flex items-center gap-3">
@@ -698,7 +698,7 @@ function RoleManageModal({ sheet, onConfirm, onUnconfirm, onClose }: {
         <div className="flex flex-1 min-h-0">
 
           {/* ── 왼쪽: 전체 신청 인원 + 미확정 인원 ── */}
-          <div className="flex-1 min-w-0 overflow-y-auto p-5 space-y-6 border-r" style={{ borderColor: '#2A3448' }}>
+          <div className="w-80 flex-shrink-0 overflow-y-auto p-5 space-y-6 border-r" style={{ borderColor: '#2A3448' }}>
             {allApplications.length > 0 && (() => {
               const uniqueApplicants = [...new Map(
                 allApplications.map(({ player }) => [player.discordId ?? player.id, player])
@@ -824,23 +824,23 @@ function RoleManageModal({ sheet, onConfirm, onUnconfirm, onClose }: {
           </div>
 
           {/* ── 오른쪽: 확정된 역할 ── */}
-          <div className="w-80 flex-shrink-0 overflow-y-auto p-5">
+          <div className="flex-1 min-w-0 overflow-y-auto p-5">
             <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wide mb-3">확정된 역할 ({confirmedEntries.length})</h4>
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               {confirmedEntries.map(({ partyId, slotId, role, bs }) => {
                 const preset = ROLE_PRESETS[role] ?? { label: role, color: '#666' }
                 return (
-                  <div key={bs.id} className="px-3 py-2.5 rounded space-y-1.5" style={{ background: '#111827', border: `1px solid ${preset.color}44` }}>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold flex-shrink-0" style={{ color: preset.color }}>{preset.label}</span>
-                      <span className="text-sm text-gray-200 font-medium truncate flex-1">{bs.player!.nickname}</span>
-                      <button onClick={() => onUnconfirm(partyId, slotId, bs.id)}
-                        className="text-xs text-red-500 hover:text-red-400 px-2 py-0.5 rounded flex-shrink-0 transition-colors"
-                        style={{ background: '#2A1A1A' }}>
-                        확정 취소
-                      </button>
+                  <div key={bs.id} className="flex items-center gap-3 px-3 py-2 rounded" style={{ background: '#111827', border: `1px solid ${preset.color}44` }}>
+                    <span className="text-xs font-bold flex-shrink-0 w-14 text-center px-1 py-0.5 rounded" style={{ background: `${preset.color}22`, color: preset.color }}>{preset.label}</span>
+                    <span className="text-sm text-gray-200 font-medium flex-shrink-0 w-28 truncate">{bs.player!.nickname}</span>
+                    <div className="flex-1 min-w-0">
+                      <MiniIcons build={bs.build} />
                     </div>
-                    <MiniIcons build={bs.build} />
+                    <button onClick={() => onUnconfirm(partyId, slotId, bs.id)}
+                      className="text-xs text-red-500 hover:text-red-400 px-2 py-0.5 rounded flex-shrink-0 transition-colors"
+                      style={{ background: '#2A1A1A' }}>
+                      확정 취소
+                    </button>
                   </div>
                 )
               })}
