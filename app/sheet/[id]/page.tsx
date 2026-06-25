@@ -343,6 +343,8 @@ export default function SheetPage({ params }: { params: Promise<{ id: string }> 
   // ── 통계
   const allBuildSlots = sheet?.parties.flatMap(p => p.slots.flatMap(s => s.buildSlots || [])).filter(Boolean) ?? []
   const confirmedCount = allBuildSlots.filter(b => b?.player).length
+  const myDiscordId = session?.user?.id
+  const isMyConfirmed = !!myDiscordId && allBuildSlots.some(b => b?.player?.discordId === myDiscordId)
   const totalSlots = allBuildSlots.length
   const roleCounts: Record<string, { filled: number; total: number }> = {}
   sheet?.parties.flatMap(p => p.slots).forEach(s => {
@@ -449,6 +451,7 @@ export default function SheetPage({ params }: { params: Promise<{ id: string }> 
                             onEditBuild={() => setBuildEditing({ partyId: party.id, slotId: roleSlot.id, buildSlotId: bs.id })}
                             onCopy={() => copyBuildSlot(party.id, roleSlot.id, bs.id)}
                             onDelete={() => deleteBuildSlot(party.id, roleSlot.id, bs.id)}
+                            isMyConfirmed={isMyConfirmed}
                             onSignup={() => { setPlayerInput({ nickname: session?.user?.guildNickname ?? session?.user?.name ?? '', ip: '' }); setPlayerModal({ partyId: party.id, slotId: roleSlot.id, buildSlotId: bs.id }) }}
                             onCancelApply={() => cancelApplication(party.id, roleSlot.id, bs.id)}
                             onRemoveConfirmed={() => removeConfirmed(party.id, roleSlot.id, bs.id)}
@@ -588,12 +591,13 @@ export default function SheetPage({ params }: { params: Promise<{ id: string }> 
 
 // ── BuildRow ──────────────────────────────────────────────────────────────────
 
-function BuildRow({ bs, idx, canEdit, canApply, myDiscordId, applicationClosed, isDragging, onDragStart, onDragEnd, onEditBuild, onCopy, onDelete, onSignup, onCancelApply, onRemoveConfirmed }: {
+function BuildRow({ bs, idx, canEdit, canApply, myDiscordId, isMyConfirmed, applicationClosed, isDragging, onDragStart, onDragEnd, onEditBuild, onCopy, onDelete, onSignup, onCancelApply, onRemoveConfirmed }: {
   bs: BuildSlot
   idx: number
   canEdit: boolean
   canApply: boolean
   myDiscordId?: string
+  isMyConfirmed?: boolean
   applicationClosed?: boolean
   isDragging?: boolean
   onDragStart?: () => void
@@ -661,6 +665,8 @@ function BuildRow({ bs, idx, canEdit, canApply, myDiscordId, applicationClosed, 
             {isApplied ? (
               <button onClick={onCancelApply} className="text-xs text-red-400 hover:text-red-300 transition-colors">신청 취소</button>
             ) : applicationClosed ? (
+              applicants.length === 0 && <span className="text-xs text-gray-700">— 비어있음</span>
+            ) : isMyConfirmed ? (
               applicants.length === 0 && <span className="text-xs text-gray-700">— 비어있음</span>
             ) : (
               canApply
